@@ -41,6 +41,20 @@ Working a genuine **Senators JSON** file surfaces the practical snags:
 
 The honest lesson Dave shares: one question took an hour or two, because **not every function is in the book** — you search your resources, read the schema constantly, and practice. Structs and JSON are the hardest data to work with, which is exactly why they're worth practicing before a web-scraping project.
 
+:::{admonition} 🔗 Notebooks for this chapter
+:class: seealso dropdown
+
+- **Ch6 — JSON, arrays, maps, structs, schemas** &nbsp; [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_JSON_and_SQL/Module3_1_JSON/Ch6.ipynb) &nbsp; [GitHub](https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_JSON_and_SQL/Module3_1_JSON/Ch6.ipynb)
+- **Senators JSON — real-world example** &nbsp; [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_JSON_and_SQL/Module3_1_JSON/JSON_Senators.ipynb) &nbsp; [GitHub](https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_JSON_and_SQL/Module3_1_JSON/JSON_Senators.ipynb)
+
+*Class exercises & projects:*
+
+- **Class exercise — JSON (blank)** &nbsp; [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_JSON_and_SQL/Module3_1_JSON/ClassJSON_Exercise_blank.ipynb) &nbsp; [GitHub](https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_JSON_and_SQL/Module3_1_JSON/ClassJSON_Exercise_blank.ipynb)
+- **Class exercise — more JSON examples** &nbsp; [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_JSON_and_SQL/Module3_1_JSON/ClassExercise_JSON_moreExamples.ipynb) &nbsp; [GitHub](https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_JSON_and_SQL/Module3_1_JSON/ClassExercise_JSON_moreExamples.ipynb)
+- **Extra — COVID JSON** &nbsp; [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_JSON_and_SQL/Module3_1_JSON/extra/ClassExercise_JSON_COVID.ipynb) &nbsp; [GitHub](https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_JSON_and_SQL/Module3_1_JSON/extra/ClassExercise_JSON_COVID.ipynb)
+- **Extra — TV Shows JSON** &nbsp; [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_JSON_and_SQL/Module3_1_JSON/extra/ClassExercise_JSON_Shows.ipynb) &nbsp; [GitHub](https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_JSON_and_SQL/Module3_1_JSON/extra/ClassExercise_JSON_Shows.ipynb)
+:::
+
 ## 📌 Lecture key points
 
 *Distilled takeaways from the video lectures behind this chapter — click each to expand.*

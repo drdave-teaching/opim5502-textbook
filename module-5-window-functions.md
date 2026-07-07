@@ -41,6 +41,16 @@ You can apply a **UDF over a window** — a **series-to-scalar** pandas UDF that
 
 **Summary:** a window function runs over a **window frame** defined by a **window spec** — `partitionBy` (how to split), `orderBy` (how to order), and optionally `rowsBetween`/`rangeBetween` (how to bound). By default an **unordered** frame is **unbounded** (constant aggregate); an **ordered** frame **grows** left-to-right (first row → current row). Bounds can be by **row** (positional) or **range** (value-based, ideal for time). Windows, UDFs, blended PySpark/SQL, and JSON all come together in the course project.
 
+:::{admonition} 🔗 Notebooks for this chapter
+:class: seealso dropdown
+
+- **Ch10 — window functions** &nbsp; [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_RDDs_UDFs/M4_2_WindowFunctions/Ch10.ipynb) &nbsp; [GitHub](https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_RDDs_UDFs/M4_2_WindowFunctions/Ch10.ipynb)
+
+*Class exercises & projects:*
+
+- **Class exercise — window functions** &nbsp; [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_RDDs_UDFs/M4_2_WindowFunctions/ClassExercise_WindowFunctions.ipynb) &nbsp; [GitHub](https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_RDDs_UDFs/M4_2_WindowFunctions/ClassExercise_WindowFunctions.ipynb)
+:::
+
 ## 📌 Lecture key points
 
 *Distilled takeaways from the video lectures behind this chapter — click each to expand.*

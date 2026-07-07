@@ -64,6 +64,19 @@ For real horsepower, connect to the UConn **HPC** cluster: connect the **VPN** (
 
 *This is the final chapter. Across the course you went from clunky Spark installs to a one-line `pip install pyspark`, from thousand-row prototypes to million-row datasets, and from raw text files to end-to-end ML pipelines. Thanks for taking the journey — now go build something with big data.*
 
+:::{admonition} 🔗 Notebooks for this chapter
+:class: seealso dropdown
+
+- **Ch12 — feature engineering & prep** &nbsp; [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module4_GetConfident/M4_1_FeatureEngineering/Ch12.ipynb) &nbsp; [GitHub](https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module4_GetConfident/M4_1_FeatureEngineering/Ch12.ipynb)
+- **Feature selection** &nbsp; [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module4_GetConfident/M4_1_FeatureEngineering/FeatureSelection.ipynb) &nbsp; [GitHub](https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module4_GetConfident/M4_1_FeatureEngineering/FeatureSelection.ipynb)
+- **Ch13 — ML pipelines & logistic regression** &nbsp; [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module4_GetConfident/M4_2_ML_Pipelines/Ch13.ipynb) &nbsp; [GitHub](https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module4_GetConfident/M4_2_ML_Pipelines/Ch13.ipynb)
+- **Regression ML in PySpark (+ cross-validation)** &nbsp; [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module4_GetConfident/M4_3_Regression_Advanced/RegressionML_PySpark.ipynb) &nbsp; [GitHub](https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module4_GetConfident/M4_3_Regression_Advanced/RegressionML_PySpark.ipynb)
+
+*Class exercises & projects:*
+
+- **Project 3 — crypto prediction** &nbsp; [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module4_GetConfident/Project_3_Crypto/Project_Crypto_Prediction.ipynb) &nbsp; [GitHub](https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module4_GetConfident/Project_3_Crypto/Project_Crypto_Prediction.ipynb)
+:::
+
 ## 📌 Lecture key points
 
 *Distilled takeaways from the video lectures behind this chapter — click each to expand.*

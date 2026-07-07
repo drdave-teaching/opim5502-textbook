@@ -50,6 +50,21 @@ Two flavors of UDFs on **grouped** data:
 
 **What to use where:** group + single condensed value → **grouped aggregate**; transform keeping the same rows, order-independent → **grouped map**; pandas ops on the whole frame → map-in-pandas; single-column transform → Series-to-Series; expensive cold start → the iterator variants. Order-dependent, sliding-window work needs **window functions** — the next chapter.
 
+:::{admonition} 🔗 Notebooks for this chapter
+:class: seealso dropdown
+
+- **Ch8 pt1 — RDDs & map** &nbsp; [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_RDDs_UDFs/M4_1_RDDs_UDFs/Ch8_pt1_RDDs.ipynb) &nbsp; [GitHub](https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_RDDs_UDFs/M4_1_RDDs_UDFs/Ch8_pt1_RDDs.ipynb)
+- **Ch8 pt2 — UDFs** &nbsp; [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_RDDs_UDFs/M4_1_RDDs_UDFs/Ch8_pt2_UDFs.ipynb) &nbsp; [GitHub](https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_RDDs_UDFs/M4_1_RDDs_UDFs/Ch8_pt2_UDFs.ipynb)
+- **Ch9 — pandas UDFs & Parquet** &nbsp; [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_RDDs_UDFs/M4_1_RDDs_UDFs/Ch9.ipynb) &nbsp; [GitHub](https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_RDDs_UDFs/M4_1_RDDs_UDFs/Ch9.ipynb)
+
+*Class exercises & projects:*
+
+- **Class exercise — UDFs** &nbsp; [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_RDDs_UDFs/M4_2_WindowFunctions/ClassExercise_UDFs.ipynb) &nbsp; [GitHub](https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_RDDs_UDFs/M4_2_WindowFunctions/ClassExercise_UDFs.ipynb)
+- **Class exercise — pandas UDF** &nbsp; [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_RDDs_UDFs/M4_2_WindowFunctions/obs/x_ClassExercise_pandas_UDF.ipynb) &nbsp; [GitHub](https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_RDDs_UDFs/M4_2_WindowFunctions/obs/x_ClassExercise_pandas_UDF.ipynb)
+- **Project 2 (blank)** &nbsp; [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_RDDs_UDFs/Project_2/Project2_blank.ipynb) &nbsp; [GitHub](https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_RDDs_UDFs/Project_2/Project2_blank.ipynb)
+- **Project 2 — answer key** &nbsp; [![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_RDDs_UDFs/Project_2/Project2_answers.ipynb) &nbsp; [GitHub](https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_RDDs_UDFs/Project_2/Project2_answers.ipynb)
+:::
+
 ## 📌 Lecture key points
 
 *Distilled takeaways from the video lectures behind this chapter — click each to expand.*
