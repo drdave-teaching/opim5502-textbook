@@ -1,0 +1,9 @@
+format: jb-book
+root: index
+chapters:
+  - file: module-1-spark-fundamentals
+  - file: module-2-dataframes-joins-sql
+  - file: module-3-complex-data-json
+  - file: module-4-rdds-and-udfs
+  - file: module-5-window-functions
+  - file: module-6-machine-learning

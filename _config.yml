@@ -1,0 +1,28 @@
+title: "Big Data with PySpark"
+author: "Dr. Dave Wanik · University of Connecticut (OPIM 5502)"
+only_build_toc_files: true
+execute:
+  execute_notebooks: "off"
+html:
+  use_repository_button: true
+  home_page_in_navbar: true
+  extra_footer: |
+    <p style="font-size:0.9em;opacity:0.85"><strong>⚠️ Work in progress.</strong> These are living draft materials — actively being written and revised. Many lecture narratives are still being filled in from transcripts. This is a teaching companion, not a final or official reference.</p>
+    <p><em>OPIM 5502 — Data Science with Big Data. A hands-on, PySpark-based course. Built from Dr. Wanik's lecture videos and Colab / Databricks notebooks.</em></p>
+repository:
+  url: https://github.com/drdave-teaching/opim5502-textbook
+  branch: main
+parse:
+  myst_enable_extensions:
+    - amsmath
+    - dollarmath
+    - colon_fence
+    - deflist
+sphinx:
+  config:
+    html_show_copyright: false
+    html_theme_options:
+      announcement: "⚡ <strong>OPIM 5502 · Big Data with PySpark</strong> — draft course companion (work in progress)"
+    mathjax3_config:
+      tex:
+        inlineMath: [['$', '$']]
