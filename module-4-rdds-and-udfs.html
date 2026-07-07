@@ -1,0 +1,575 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Chapter 4 — RDDs &amp; UDFs &#8212; Big Data with PySpark</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=b8b12719"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'module-4-rdds-and-udfs';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Chapter 5 — Window Functions" href="module-5-window-functions.html" />
+    <link rel="prev" title="Chapter 3 — Complex Data: JSON, Arrays, Maps &amp; Schemas" href="module-3-complex-data-json.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+<aside class="bd-header-announcement" aria-label="Announcement">
+  <div class="bd-header-announcement__content">⚡ <strong>OPIM 5502 · Big Data with PySpark</strong> — draft course companion (work in progress)</div>
+</aside>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Big Data with PySpark</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="module-1-spark-fundamentals.html">Chapter 1 — Spark Fundamentals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module-2-dataframes-joins-sql.html">Chapter 2 — DataFrames: EDA, Joins &amp; SQL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module-3-complex-data-json.html">Chapter 3 — Complex Data: JSON, Arrays, Maps &amp; Schemas</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Chapter 4 — RDDs &amp; UDFs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module-5-window-functions.html">Chapter 5 — Window Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module-6-machine-learning.html">Chapter 6 — Machine Learning with Spark MLlib</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/module-4-rdds-and-udfs.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Chapter 4 — RDDs & UDFs</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rdds-and-map">4.1 RDDs and <code class="docutils literal notranslate"><span class="pre">map</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#filter-and-reduce">4.2 <code class="docutils literal notranslate"><span class="pre">filter</span></code> and <code class="docutils literal notranslate"><span class="pre">reduce</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#udfs">4.3 UDFs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pandas-udfs-and-parquet">4.4 pandas UDFs and Parquet</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-three-flavors-of-pandas-udfs">4.5 The three flavors of pandas UDFs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#grouped-udfs-split-apply-combine">4.6 Grouped UDFs: split-apply-combine</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lecture-key-points">📌 Lecture key points</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="chapter-4-rdds-udfs">
+<h1>Chapter 4 — RDDs &amp; UDFs<a class="headerlink" href="#chapter-4-rdds-udfs" title="Link to this heading">#</a></h1>
+<p>So far we’ve leaned on Spark’s built-in DataFrame functions. This chapter extends PySpark with <strong>your own Python code</strong>, two ways. <strong>RDDs</strong> (resilient distributed datasets) are flexible, schema-less bags of elements processed with the <strong>higher-order functions</strong> <code class="docutils literal notranslate"><span class="pre">map</span></code>, <code class="docutils literal notranslate"><span class="pre">filter</span></code>, and <code class="docutils literal notranslate"><span class="pre">reduce</span></code> — the classic <strong>MapReduce</strong> idea. <strong>UDFs</strong> (user-defined functions) promote a plain Python function to work on <strong>DataFrame columns</strong>, and <strong>pandas UDFs</strong> make that lightning-fast by operating on whole pandas Series at once. We meet the <strong>Parquet</strong> file format along the way, and finish with <strong>grouped</strong> (split-apply-combine) UDFs.</p>
+<section id="rdds-and-map">
+<h2>4.1 RDDs and <code class="docutils literal notranslate"><span class="pre">map</span></code><a class="headerlink" href="#rdds-and-map" title="Link to this heading">#</a></h2>
+<p>An <strong>RDD</strong> is an unordered collection of independent objects — no columns, no schema, “a bag of elements” you can scatter to worker nodes, apply a function to, and collect back. Because it’s schema-less, an RDD can hold <strong>mixed types</strong> (an integer, string, float, tuple, and dict together) that no DataFrame column would allow. RDDs come from the <strong>SparkContext</strong> (aliased <strong><code class="docutils literal notranslate"><span class="pre">sc</span></code></strong>, not the <code class="docutils literal notranslate"><span class="pre">spark</span></code> SQL session): <code class="docutils literal notranslate"><span class="pre">rdd</span> <span class="pre">=</span> <span class="pre">sc.parallelize(my_list)</span></code>.</p>
+<p>You process an RDD with <strong>higher-order functions</strong> — functions that take a <em>function</em> as input. The first is <strong><code class="docutils literal notranslate"><span class="pre">map</span></code></strong>, which applies a Python function to <strong>every element</strong>. Crucially, the function is <strong>plain Python</strong>, not PySpark: <code class="docutils literal notranslate"><span class="pre">def</span> <span class="pre">add1(v):</span> <span class="pre">return</span> <span class="pre">v</span> <span class="pre">+</span> <span class="pre">1</span></code>. But apply <code class="docutils literal notranslate"><span class="pre">add1</span></code> to a mixed-type RDD and it <strong>fails only when collected</strong> — a <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> on the string, tuple, and dict (you can’t add 1 to those). RDDs give you <strong>no safeguards</strong>, so you bake in your own error handling with <strong><code class="docutils literal notranslate"><span class="pre">try/except</span></code></strong> (and <code class="docutils literal notranslate"><span class="pre">assert</span></code>s to catch bugs). That flexibility-for-safety trade-off is the defining feature of RDDs.</p>
+</section>
+<section id="filter-and-reduce">
+<h2>4.2 <code class="docutils literal notranslate"><span class="pre">filter</span></code> and <code class="docutils literal notranslate"><span class="pre">reduce</span></code><a class="headerlink" href="#filter-and-reduce" title="Link to this heading">#</a></h2>
+<p>Two more higher-order functions:</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">filter</span></code></strong> keeps elements satisfying a <strong>predicate</strong>. It pairs naturally with a <strong>lambda</strong> (anonymous, run-once function): <code class="docutils literal notranslate"><span class="pre">collection.filter(lambda</span> <span class="pre">x:</span> <span class="pre">isinstance(x,</span> <span class="pre">(int,</span> <span class="pre">float)))</span></code> keeps only numbers — no <code class="docutils literal notranslate"><span class="pre">try/except</span></code> needed. Remember it’s lazy until you <strong><code class="docutils literal notranslate"><span class="pre">.collect()</span></code></strong>.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">reduce</span></code></strong> takes <strong>two elements, applies a function, returns one</strong>, chunking through the data (e.g. summing <code class="docutils literal notranslate"><span class="pre">[4,</span> <span class="pre">7,</span> <span class="pre">9,</span> <span class="pre">1,</span> <span class="pre">3]</span></code> by folding pairwise). For <code class="docutils literal notranslate"><span class="pre">reduce</span></code> to work <strong>in a distributed world</strong>, the function must be <strong>commutative</strong> (order doesn’t matter — true for <code class="docutils literal notranslate"><span class="pre">+</span></code>, false for <code class="docutils literal notranslate"><span class="pre">−</span></code>) and <strong>associative</strong> (grouping doesn’t matter). Addition qualifies; subtraction doesn’t — so choose reduce functions carefully.</p></li>
+</ul>
+<p>RDDs are powerful and still lurk under the hood, but the course — and the field — is moving toward <strong>DataFrame</strong> functionality, including pandas-like operations at Spark speed.</p>
+</section>
+<section id="udfs">
+<h2>4.3 UDFs<a class="headerlink" href="#udfs" title="Link to this heading">#</a></h2>
+<p>A <strong>UDF</strong> promotes a regular Python function to run on <strong>PySpark columns</strong>. Write the function in three careful parts: (1) <strong>document</strong> it with a docstring, (2) mind the <strong>input and output types</strong> (type errors are deadly at scale), and (3) <strong>test</strong> it with <code class="docutils literal notranslate"><span class="pre">assert</span></code>s. The book’s example reduces fractions (a <code class="docutils literal notranslate"><span class="pre">(numerator,</span> <span class="pre">denominator)</span></code> tuple) and converts them to floats.</p>
+<p>Two ways to create a UDF:</p>
+<ul class="simple">
+<li><p><strong>Explicit</strong> — <code class="docutils literal notranslate"><span class="pre">reduce_udf</span> <span class="pre">=</span> <span class="pre">F.udf(py_reduce_fraction,</span> <span class="pre">T.ArrayType(T.LongType()))</span></code>, passing the return type, then use it like any column function inside <code class="docutils literal notranslate"><span class="pre">withColumn</span></code>/<code class="docutils literal notranslate"><span class="pre">select</span></code>.</p></li>
+<li><p><strong>Decorator</strong> — cleaner and more compact: put <strong><code class="docutils literal notranslate"><span class="pre">&#64;F.pandas_udf(T.DoubleType())</span></code></strong> (or <code class="docutils literal notranslate"><span class="pre">&#64;F.udf(...)</span></code>) above the function, and the UDF inherits its name.</p></li>
+</ul>
+<p>Note the return types differ by data: an array of <code class="docutils literal notranslate"><span class="pre">LongType</span></code> for integer fractions, <code class="docutils literal notranslate"><span class="pre">DoubleType</span></code> for a float. UDFs are the powerful tool for <strong>column transformations</strong>; next we scale them with pandas.</p>
+</section>
+<section id="pandas-udfs-and-parquet">
+<h2>4.4 pandas UDFs and Parquet<a class="headerlink" href="#pandas-udfs-and-parquet" title="Link to this heading">#</a></h2>
+<p>A <strong>pandas UDF</strong> leverages pandas <em>and</em> a performance boost: instead of processing <strong>row by row</strong>, it converts a column to a <strong>pandas Series</strong> and processes it <strong>all at once</strong>, then converts back to a PySpark column. It relies on <strong>PyArrow</strong> (pre-installed on Colab; install it yourself locally) to track records so work can be split across nodes and reassembled.</p>
+<p>We also meet a new file format: <strong>Parquet</strong> — an open-source, <strong>columnar</strong> format that’s dramatically more efficient than CSV. A terabyte of CSV becomes ~130 GB (<strong>87% less storage</strong>), and queries are <strong>~34% faster</strong> scanning <strong>99% less data</strong>, because Parquet reads only the <strong>columns needed</strong> rather than the whole file. The chapter’s data is <strong>GSOD</strong> daily weather observations (station × year × month × day), read from three yearly Parquet files unioned with <code class="docutils literal notranslate"><span class="pre">functools.reduce</span></code> (~11 million rows).</p>
+<p>(Two practical notes from the recording: Spark’s download URL can go stale — check the Apache distributions and point Colab at the right tarball/folder; and <code class="docutils literal notranslate"><span class="pre">distinct</span></code>-count operations on grouped data can be very slow, so check your available CPUs/cores.)</p>
+</section>
+<section id="the-three-flavors-of-pandas-udfs">
+<h2>4.5 The three flavors of pandas UDFs<a class="headerlink" href="#the-three-flavors-of-pandas-udfs" title="Link to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p><strong>Series → Series</strong> — a column function with pandas, faster than a plain UDF because it processes the whole Series. Use the <strong><code class="docutils literal notranslate"><span class="pre">&#64;F.pandas_udf(T.DecimalType())</span></code></strong> decorator; the signature takes a <code class="docutils literal notranslate"><span class="pre">pd.Series</span></code> and returns one (e.g. Fahrenheit → Celsius, <code class="docutils literal notranslate"><span class="pre">(temp</span> <span class="pre">−</span> <span class="pre">32)</span> <span class="pre">*</span> <span class="pre">5/9</span></code>), applied with <code class="docutils literal notranslate"><span class="pre">withColumn</span></code>.</p></li>
+<li><p><strong>Iterator of Series → Iterator of Series</strong> — the same one-to-one transform, but for an <strong>expensive cold-start</strong> operation (e.g. deserializing an ML model). The signature switches to iterators; you <code class="docutils literal notranslate"><span class="pre">yield</span></code> results. Simulating the cost with a 5-second <code class="docutils literal notranslate"><span class="pre">sleep</span></code>, this run took ~19s vs. ~10s for the plain Series UDF — the iterator has setup overhead that pays off only for genuinely costly per-partition work.</p></li>
+<li><p><strong>Iterator of <em>multiple</em> Series → Iterator of Series</strong> — for <strong>multiple input columns</strong>. The signature is an <em>iterator of a tuple of</em> Series. To combine GSOD’s separate <code class="docutils literal notranslate"><span class="pre">year</span></code>, <code class="docutils literal notranslate"><span class="pre">month</span></code>, <code class="docutils literal notranslate"><span class="pre">day</span></code> columns into one <code class="docutils literal notranslate"><span class="pre">date</span></code>, zip the three Series in order (order matters — no keyword args), build a datetime, and <code class="docutils literal notranslate"><span class="pre">yield</span></code> the result. PyArrow keeps the three columns aligned across nodes.</p></li>
+</ol>
+</section>
+<section id="grouped-udfs-split-apply-combine">
+<h2>4.6 Grouped UDFs: split-apply-combine<a class="headerlink" href="#grouped-udfs-split-apply-combine" title="Link to this heading">#</a></h2>
+<p>Two flavors of UDFs on <strong>grouped</strong> data:</p>
+<ul class="simple">
+<li><p><strong>Grouped aggregate (Series → scalar)</strong> — condense each group to a single value, placed inside <strong><code class="docutils literal notranslate"><span class="pre">.agg(...)</span></code></strong> after a <code class="docutils literal notranslate"><span class="pre">groupBy</span></code>. Beyond built-ins, you can call, say, <strong>scikit-learn</strong>: for each station-year-month group, fit a linear regression of temperature on day-of-month and return the <strong>slope</strong> (is it warming or cooling?). Shuffled rows are fine as long as day↔temperature pairs stay aligned. A gut check: ~12,000 stations × 36 months ≈ 390k rows — and the output was ~390k rows across 4 columns (within ~10%, the gap being incomplete data — knocked-over stations, bird nests).</p></li>
+<li><p><strong>Grouped map (split-apply-combine)</strong> — split the DataFrame into per-group batches, apply a function that takes and returns a <strong>whole DataFrame</strong>, then recombine. Use <strong><code class="docutils literal notranslate"><span class="pre">.apply(scale_temperature,</span> <span class="pre">schema)</span></code></strong> (not <code class="docutils literal notranslate"><span class="pre">agg</span></code>) with an explicit output schema. Example: normalize each month’s temperatures to [0, 1] per station-year-month; guard the min == max case (0/0) by recoding to <strong>0.5</strong>. The output keeps the <strong>same row count</strong>, transformed per group.</p></li>
+</ul>
+<p><strong>What to use where:</strong> group + single condensed value → <strong>grouped aggregate</strong>; transform keeping the same rows, order-independent → <strong>grouped map</strong>; pandas ops on the whole frame → map-in-pandas; single-column transform → Series-to-Series; expensive cold start → the iterator variants. Order-dependent, sliding-window work needs <strong>window functions</strong> — the next chapter.</p>
+<div class="seealso dropdown admonition">
+<p class="admonition-title">🔗 Notebooks for this chapter</p>
+<ul class="simple">
+<li><p><strong>Ch8 pt1 — RDDs &amp; map</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_RDDs_UDFs/M4_1_RDDs_UDFs/Ch8_pt1_RDDs.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_RDDs_UDFs/M4_1_RDDs_UDFs/Ch8_pt1_RDDs.ipynb">GitHub</a></p></li>
+<li><p><strong>Ch8 pt2 — UDFs</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_RDDs_UDFs/M4_1_RDDs_UDFs/Ch8_pt2_UDFs.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_RDDs_UDFs/M4_1_RDDs_UDFs/Ch8_pt2_UDFs.ipynb">GitHub</a></p></li>
+<li><p><strong>Ch9 — pandas UDFs &amp; Parquet</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_RDDs_UDFs/M4_1_RDDs_UDFs/Ch9.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_RDDs_UDFs/M4_1_RDDs_UDFs/Ch9.ipynb">GitHub</a></p></li>
+</ul>
+<p><em>Class exercises &amp; projects:</em></p>
+<ul class="simple">
+<li><p><strong>Class exercise — UDFs</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_RDDs_UDFs/M4_2_WindowFunctions/ClassExercise_UDFs.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_RDDs_UDFs/M4_2_WindowFunctions/ClassExercise_UDFs.ipynb">GitHub</a></p></li>
+<li><p><strong>Class exercise — pandas UDF</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_RDDs_UDFs/M4_2_WindowFunctions/obs/x_ClassExercise_pandas_UDF.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_RDDs_UDFs/M4_2_WindowFunctions/obs/x_ClassExercise_pandas_UDF.ipynb">GitHub</a></p></li>
+<li><p><strong>Project 2 (blank)</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_RDDs_UDFs/Project_2/Project2_blank.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_RDDs_UDFs/Project_2/Project2_blank.ipynb">GitHub</a></p></li>
+<li><p><strong>Project 2 — answer key</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_RDDs_UDFs/Project_2/Project2_answers.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_RDDs_UDFs/Project_2/Project2_answers.ipynb">GitHub</a></p></li>
+</ul>
+</div>
+</section>
+<section id="lecture-key-points">
+<h2>📌 Lecture key points<a class="headerlink" href="#lecture-key-points" title="Link to this heading">#</a></h2>
+<p><em>Distilled takeaways from the video lectures behind this chapter — click each to expand.</em></p>
+<div class="note dropdown admonition">
+<p class="admonition-title">Introduction to RDDs and higher-order functions</p>
+<ul class="simple">
+<li><p>An <strong>RDD</strong> is a schema-less “bag of elements” that can hold <strong>mixed types</strong>, created via <code class="docutils literal notranslate"><span class="pre">sc.parallelize(...)</span></code> from the <strong>SparkContext</strong>.</p></li>
+<li><p><strong>Higher-order functions</strong> take a function as input; <strong><code class="docutils literal notranslate"><span class="pre">map</span></code></strong> applies a plain-Python function to every element.</p></li>
+<li><p>RDDs give <strong>no safeguards</strong> — mixed-type failures surface only on <code class="docutils literal notranslate"><span class="pre">collect()</span></code>, so add <code class="docutils literal notranslate"><span class="pre">try/except</span></code> and <code class="docutils literal notranslate"><span class="pre">assert</span></code>s.</p></li>
+<li><p>RDDs are flexible and fast but the field is moving toward <strong>DataFrames</strong> and UDFs.</p></li>
+</ul>
+</div>
+<div class="note dropdown admonition">
+<p class="admonition-title">Two other higher-order functions (filter and reduce)</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">filter</span></code></strong> keeps elements satisfying a <strong>predicate</strong>, often via a run-once <strong>lambda</strong>; lazy until <code class="docutils literal notranslate"><span class="pre">.collect()</span></code>.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">reduce</span></code></strong> folds <strong>two elements into one</strong> repeatedly, chunking across nodes.</p></li>
+<li><p>For distributed <code class="docutils literal notranslate"><span class="pre">reduce</span></code>, the function must be <strong>commutative</strong> and <strong>associative</strong> (<code class="docutils literal notranslate"><span class="pre">+</span></code> qualifies, <code class="docutils literal notranslate"><span class="pre">−</span></code> does not).</p></li>
+<li><p>No <code class="docutils literal notranslate"><span class="pre">try/except</span></code> needed for <code class="docutils literal notranslate"><span class="pre">filter</span></code> on a clean predicate.</p></li>
+</ul>
+</div>
+<div class="note dropdown admonition">
+<p class="admonition-title">Introduction to UDFs</p>
+<ul class="simple">
+<li><p>A <strong>UDF</strong> promotes a plain Python function to run on <strong>PySpark columns</strong>.</p></li>
+<li><p>Write it in three parts: <strong>docstring</strong>, careful <strong>input/output types</strong>, and <strong><code class="docutils literal notranslate"><span class="pre">assert</span></code></strong> tests.</p></li>
+<li><p>Create explicitly with <strong><code class="docutils literal notranslate"><span class="pre">F.udf(fn,</span> <span class="pre">returnType)</span></code></strong> or with the <strong><code class="docutils literal notranslate"><span class="pre">&#64;decorator</span></code></strong> (cleaner; inherits the function name).</p></li>
+<li><p>Return types must match the data (e.g. <code class="docutils literal notranslate"><span class="pre">ArrayType(LongType)</span></code> for int fractions, <code class="docutils literal notranslate"><span class="pre">DoubleType</span></code> for floats).</p></li>
+</ul>
+</div>
+<div class="note dropdown admonition">
+<p class="admonition-title">Intro to pandas UDFs and Parquet files</p>
+<ul class="simple">
+<li><p>A <strong>pandas UDF</strong> processes a whole <strong>Series at once</strong> (not row-by-row), a big speed-up, backed by <strong>PyArrow</strong>.</p></li>
+<li><p><strong>Parquet</strong> is a columnar format: ~87% less storage than CSV, ~34% faster queries reading only needed columns.</p></li>
+<li><p>Read multiple Parquet files and union them with <code class="docutils literal notranslate"><span class="pre">functools.reduce</span></code> (GSOD weather, ~11M rows).</p></li>
+<li><p>Practical snags: Spark’s download URL can go stale; grouped <code class="docutils literal notranslate"><span class="pre">distinct</span></code> counts can be very slow.</p></li>
+</ul>
+</div>
+<div class="note dropdown admonition">
+<p class="admonition-title">Three flavors of pandas UDFs</p>
+<ul class="simple">
+<li><p><strong>Series → Series</strong>: a fast column transform (e.g. °F → °C) via the <code class="docutils literal notranslate"><span class="pre">&#64;pandas_udf(type)</span></code> decorator.</p></li>
+<li><p><strong>Iterator of Series → Iterator of Series</strong>: same one-to-one transform, but for an <strong>expensive cold start</strong>; you <code class="docutils literal notranslate"><span class="pre">yield</span></code>.</p></li>
+<li><p><strong>Iterator of <em>multiple</em> Series → Series</strong>: combine several columns (e.g. year/month/day → date); zip <strong>in order</strong>.</p></li>
+<li><p>Order matters for multi-column UDFs — no keyword args; PyArrow keeps columns aligned across nodes.</p></li>
+</ul>
+</div>
+<div class="note dropdown admonition">
+<p class="admonition-title">split-apply-combine or UDFs for grouped data</p>
+<ul class="simple">
+<li><p><strong>Grouped aggregate (Series → scalar)</strong> condenses each group to one value inside <code class="docutils literal notranslate"><span class="pre">.agg(...)</span></code> — e.g. a scikit-learn regression <strong>slope</strong>.</p></li>
+<li><p>Gut check: ~12,000 stations × 36 months ≈ 390k rows (minus incomplete data).</p></li>
+<li><p><strong>Grouped map (split-apply-combine)</strong> applies a DataFrame→DataFrame function per group via <strong><code class="docutils literal notranslate"><span class="pre">.apply(fn,</span> <span class="pre">schema)</span></code></strong>, keeping the row count.</p></li>
+<li><p>Guard divide-by-zero (min == max → recode to 0.5); order-dependent/sliding work needs <strong>window functions</strong> (next chapter).</p></li>
+</ul>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="module-3-complex-data-json.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Chapter 3 — Complex Data: JSON, Arrays, Maps &amp; Schemas</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="module-5-window-functions.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Chapter 5 — Window Functions</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rdds-and-map">4.1 RDDs and <code class="docutils literal notranslate"><span class="pre">map</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#filter-and-reduce">4.2 <code class="docutils literal notranslate"><span class="pre">filter</span></code> and <code class="docutils literal notranslate"><span class="pre">reduce</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#udfs">4.3 UDFs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pandas-udfs-and-parquet">4.4 pandas UDFs and Parquet</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-three-flavors-of-pandas-udfs">4.5 The three flavors of pandas UDFs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#grouped-udfs-split-apply-combine">4.6 Grouped UDFs: split-apply-combine</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lecture-key-points">📌 Lecture key points</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Dr. Dave Wanik · University of Connecticut (OPIM 5502)
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

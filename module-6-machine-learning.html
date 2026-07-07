@@ -1,0 +1,633 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Chapter 6 — Machine Learning with Spark MLlib &#8212; Big Data with PySpark</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=b8b12719"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'module-6-machine-learning';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Chapter 5 — Window Functions" href="module-5-window-functions.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+<aside class="bd-header-announcement" aria-label="Announcement">
+  <div class="bd-header-announcement__content">⚡ <strong>OPIM 5502 · Big Data with PySpark</strong> — draft course companion (work in progress)</div>
+</aside>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Big Data with PySpark</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="module-1-spark-fundamentals.html">Chapter 1 — Spark Fundamentals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module-2-dataframes-joins-sql.html">Chapter 2 — DataFrames: EDA, Joins &amp; SQL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module-3-complex-data-json.html">Chapter 3 — Complex Data: JSON, Arrays, Maps &amp; Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module-4-rdds-and-udfs.html">Chapter 4 — RDDs &amp; UDFs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module-5-window-functions.html">Chapter 5 — Window Functions</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Chapter 6 — Machine Learning with Spark MLlib</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/module-6-machine-learning.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Chapter 6 — Machine Learning with Spark MLlib</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#databricks-community-edition">6.1 Databricks Community Edition</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-prep-imputing-binaries-and-capping-outliers">6.2 Data prep: imputing binaries and capping outliers</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#vectorassembler-correlation-transformers-vs-estimators">6.3 VectorAssembler, correlation, transformers vs. estimators</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#imputer-and-minmaxscaler-estimators">6.4 Imputer and MinMaxScaler (estimators)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#building-a-pipeline">6.5 Building a Pipeline</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#adding-a-logistic-regression-classifier">6.6 Adding a logistic-regression classifier</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluating-the-model">6.7 Evaluating the model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cross-validation-and-hyperparameter-tuning">6.8 Cross-validation and hyperparameter tuning</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#extracting-results-and-where-to-go">6.9 Extracting results, and where to go</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#running-spark-on-hpc">6.10 Running Spark on HPC</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lecture-key-points">📌 Lecture key points</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="chapter-6-machine-learning-with-spark-mllib">
+<h1>Chapter 6 — Machine Learning with Spark MLlib<a class="headerlink" href="#chapter-6-machine-learning-with-spark-mllib" title="Link to this heading">#</a></h1>
+<p>The payoff chapter: <strong>machine learning at scale</strong> with Spark MLlib. We set up <strong>Databricks Community Edition</strong> as a free cluster, prepare a messy recipes dataset (imputing binary features, fixing string-typed numbers, capping outliers), meet <strong>transformers and estimators</strong> (<code class="docutils literal notranslate"><span class="pre">VectorAssembler</span></code>, <code class="docutils literal notranslate"><span class="pre">Imputer</span></code>, <code class="docutils literal notranslate"><span class="pre">MinMaxScaler</span></code>) and correlation analysis, then assemble everything into a <strong>Pipeline</strong>, add a <strong>logistic-regression classifier</strong>, <strong>evaluate</strong> it (confusion matrix, precision/recall/F1, ROC/AUC), and <strong>tune</strong> it with <strong>cross-validation</strong>. We close with running Spark on the UConn <strong>HPC</strong> cluster.</p>
+<section id="databricks-community-edition">
+<h2>6.1 Databricks Community Edition<a class="headerlink" href="#databricks-community-edition" title="Link to this heading">#</a></h2>
+<p>Colab auto-connects to a runtime; <strong>Databricks</strong> wants a real cloud workflow. Sign up for the free <strong>Community Edition</strong>, then <strong>Compute → Create Compute</strong> to spin up a (small, free) cluster — it starts in a minute or two. Upload data via <strong>Data → Create Table</strong> into the <strong>file store</strong> (<code class="docutils literal notranslate"><span class="pre">/FileStore/tables/</span></code>), and <strong>attach your notebook to the cluster</strong> (top-right) before running. Read from <strong>DBFS</strong> (enable the file browser under Settings → Admin → Workspace Settings if you don’t see it); writes land in <code class="docutils literal notranslate"><span class="pre">/user/hive/warehouse/</span></code> (all lowercase). Manage files with <code class="docutils literal notranslate"><span class="pre">dbutils.fs</span></code> (<code class="docutils literal notranslate"><span class="pre">ls</span></code>, <code class="docutils literal notranslate"><span class="pre">rm</span></code>). PySpark runs <strong>natively</strong> — no install needed. Notebooks support <strong>R, Python, Scala, SQL</strong> (switch per-cell with a <code class="docutils literal notranslate"><span class="pre">%</span></code> magic), export via <strong>File → Export → .ipynb</strong>, and you can download displayed results as CSV. (AutoML is off in the free tier.)</p>
+</section>
+<section id="data-prep-imputing-binaries-and-capping-outliers">
+<h2>6.2 Data prep: imputing binaries and capping outliers<a class="headerlink" href="#data-prep-imputing-binaries-and-capping-outliers" title="Link to this heading">#</a></h2>
+<p>Working the ~20,000-row × 680-column recipes dataset (target: “is it a dessert?”):</p>
+<ul class="simple">
+<li><p><strong>Drop null targets</strong> with <code class="docutils literal notranslate"><span class="pre">dropna(subset=[&quot;target&quot;])</span></code> (lost 5 rows); dropping fully-null feature rows found none, but nulls remain scattered.</p></li>
+<li><p><strong>Impute binary features</strong> differently from continuous — you can’t use the mean, so <strong>fill with 0</strong> (or the most common value): <code class="docutils literal notranslate"><span class="pre">fillna(0.0)</span></code>, looped over the binary columns.</p></li>
+<li><p><strong>Fix string-typed numbers</strong> — data misalignment made <code class="docutils literal notranslate"><span class="pre">rating</span></code>/<code class="docutils literal notranslate"><span class="pre">calories</span></code> strings. Write an <strong><code class="docutils literal notranslate"><span class="pre">is_a_number</span></code> UDF</strong> (returns a Boolean; <code class="docutils literal notranslate"><span class="pre">try</span> <span class="pre">float(x)</span></code> → <code class="docutils literal notranslate"><span class="pre">True</span></code>, except → <code class="docutils literal notranslate"><span class="pre">False</span></code>), use its complement (<code class="docutils literal notranslate"><span class="pre">~</span></code>) to find the one bad row (<code class="docutils literal notranslate"><span class="pre">&quot;cucumber&quot;</span></code> in <code class="docutils literal notranslate"><span class="pre">rating</span></code>), drop it, and <strong>cast</strong> those columns to <code class="docutils literal notranslate"><span class="pre">double</span></code>.</p></li>
+<li><p><strong>Cap outliers (truncation)</strong> — some calories/protein values are absurd (100,000 calories). Recode anything below the <strong>1st percentile</strong> up to it, and above the <strong>99th percentile</strong> down to it, iterating a percentile dictionary while <strong>preserving nulls</strong>. (Prefer PySpark percentile functions over hard-coding.)</p></li>
+</ul>
+</section>
+<section id="vectorassembler-correlation-transformers-vs-estimators">
+<h2>6.3 VectorAssembler, correlation, transformers vs. estimators<a class="headerlink" href="#vectorassembler-correlation-transformers-vs-estimators" title="Link to this heading">#</a></h2>
+<p>MLlib models need all features in <strong>one vector column</strong>. The <strong><code class="docutils literal notranslate"><span class="pre">VectorAssembler</span></code></strong> is a <strong>transformer</strong>: instantiate it with input columns → output column (no data yet), then <code class="docutils literal notranslate"><span class="pre">.transform(df)</span></code> adds a <strong>vector-typed</strong> column. Feed that to <strong><code class="docutils literal notranslate"><span class="pre">Correlation.corr</span></code></strong> (from <code class="docutils literal notranslate"><span class="pre">pyspark.ml.stat</span></code>) for pairwise Pearson correlations. The output is a <strong>1×1 DataFrame</strong> holding a <strong>dense matrix</strong> (7 features → 49 entries), so select <code class="docutils literal notranslate"><span class="pre">[0][0]</span></code>, convert to an array, then to a labeled <strong>pandas DataFrame</strong> for a readable heatmap — and drop features that are too highly correlated (redundant information confuses the model).</p>
+<p>The core distinction:</p>
+<ul class="simple">
+<li><p><strong>Transformer</strong> — no learnable parameters; <code class="docutils literal notranslate"><span class="pre">.transform()</span></code> takes a DataFrame → DataFrame (e.g. <code class="docutils literal notranslate"><span class="pre">VectorAssembler</span></code> pasting columns into a vector).</p></li>
+<li><p><strong>Estimator</strong> — an algorithm called with <strong><code class="docutils literal notranslate"><span class="pre">.fit()</span></code></strong> that <em>learns</em> parameters and <strong>produces a model</strong> (itself a transformer) you then <strong><code class="docutils literal notranslate"><span class="pre">.transform()</span></code></strong>. This is the familiar <code class="docutils literal notranslate"><span class="pre">fit</span></code>/<code class="docutils literal notranslate"><span class="pre">transform</span></code> split (fit on train, transform on test), just not fused into one <code class="docutils literal notranslate"><span class="pre">fit_transform</span></code>.</p></li>
+</ul>
+</section>
+<section id="imputer-and-minmaxscaler-estimators">
+<h2>6.4 Imputer and MinMaxScaler (estimators)<a class="headerlink" href="#imputer-and-minmaxscaler-estimators" title="Link to this heading">#</a></h2>
+<p>Two estimators for continuous features:</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">Imputer</span></code></strong> (strategy <code class="docutils literal notranslate"><span class="pre">&quot;mean&quot;</span></code>) — <strong>learns</strong> each column’s mean on <code class="docutils literal notranslate"><span class="pre">.fit()</span></code>, then <code class="docutils literal notranslate"><span class="pre">.transform()</span></code> fills nulls (output columns suffixed <code class="docutils literal notranslate"><span class="pre">_i</span></code> so you can compare).</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">MinMaxScaler</span></code></strong> — <strong>learns</strong> each column’s min/max on <code class="docutils literal notranslate"><span class="pre">.fit()</span></code>, then rescales to [0, 1] on <code class="docutils literal notranslate"><span class="pre">.transform()</span></code>. It operates on the <strong>vector</strong> column, so assemble first.</p></li>
+</ul>
+<p>The recurring pattern — separate data into <strong>identifiers / continuous / binary / target</strong>, impute, assemble, scale — is a <strong>reusable recipe</strong>, which is exactly what pipelines formalize. (And the reason for all this: pandas caps out around 30–40 GB with limited functionality, while <strong>PySpark keeps going</strong> at 70 GB+ — use PySpark when the data is big, pandas when it’s small.)</p>
+</section>
+<section id="building-a-pipeline">
+<h2>6.5 Building a Pipeline<a class="headerlink" href="#building-a-pipeline" title="Link to this heading">#</a></h2>
+<p>A <strong><code class="docutils literal notranslate"><span class="pre">Pipeline</span></code></strong> chains stages as pure <strong>instructions</strong> (no data): <code class="docutils literal notranslate"><span class="pre">Imputer</span></code> → continuous <code class="docutils literal notranslate"><span class="pre">VectorAssembler</span></code> → <code class="docutils literal notranslate"><span class="pre">MinMaxScaler</span></code> → a <strong>pre-ML assembler</strong> that merges the scaled continuous vector <strong>with the binary and ratio columns</strong> into one final <strong><code class="docutils literal notranslate"><span class="pre">features</span></code></strong> vector (you can’t have multiple vector columns — they must be combined). Then <code class="docutils literal notranslate"><span class="pre">.fit(df).transform(df)</span></code> runs the whole thing. Update stages with <strong><code class="docutils literal notranslate"><span class="pre">setStages</span></code></strong>. The <code class="docutils literal notranslate"><span class="pre">features</span></code> column may print in <strong>sparse</strong> notation (positions + values for a mostly-zero vector) vs. <strong>dense</strong> (all values) — and the <strong>ML metadata</strong> (original column names per index) lives in the schema’s struct if you need to trace a feature back. <em>(Naming tip Dave stresses: call it <code class="docutils literal notranslate"><span class="pre">df</span></code> and <code class="docutils literal notranslate"><span class="pre">my_pipeline</span></code>, not <code class="docutils literal notranslate"><span class="pre">food</span></code> / <code class="docutils literal notranslate"><span class="pre">food_pipeline</span></code>, so your code generalizes — graders notice copy-paste.)</em></p>
+</section>
+<section id="adding-a-logistic-regression-classifier">
+<h2>6.6 Adding a logistic-regression classifier<a class="headerlink" href="#adding-a-logistic-regression-classifier" title="Link to this heading">#</a></h2>
+<p>Append a <strong><code class="docutils literal notranslate"><span class="pre">LogisticRegression</span></code></strong> (from <code class="docutils literal notranslate"><span class="pre">pyspark.ml.classification</span></code>) as the pipeline’s final stage: <code class="docutils literal notranslate"><span class="pre">featuresCol=&quot;features&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">labelCol=&quot;target&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">predictionCol=&quot;prediction&quot;</span></code>. <strong>Split</strong> the data (<code class="docutils literal notranslate"><span class="pre">randomSplit([0.7,</span> <span class="pre">0.3],</span> <span class="pre">seed=13)</span></code>), <strong><code class="docutils literal notranslate"><span class="pre">fit</span></code> on train</strong>, <strong><code class="docutils literal notranslate"><span class="pre">transform</span></code> test</strong> — the pipeline references column <em>names</em> in <code class="docutils literal notranslate"><span class="pre">train</span></code>/<code class="docutils literal notranslate"><span class="pre">test</span></code>, so there’s no separate <code class="docutils literal notranslate"><span class="pre">X_train</span></code>/<code class="docutils literal notranslate"><span class="pre">y_train</span></code> to manage. You can <strong>hot-swap</strong> any classifier (decision tree, random forest, boosted tree, SVM). The output has <strong><code class="docutils literal notranslate"><span class="pre">rawPrediction</span></code></strong>, <strong><code class="docutils literal notranslate"><span class="pre">probability</span></code></strong>, and <strong><code class="docutils literal notranslate"><span class="pre">prediction</span></code></strong> columns: convert a logit to probability via <code class="docutils literal notranslate"><span class="pre">e^x</span> <span class="pre">/</span> <span class="pre">(1</span> <span class="pre">+</span> <span class="pre">e^x)</span></code>; <code class="docutils literal notranslate"><span class="pre">probability</span></code> is a two-element list (P(class 0), P(class 1)); <code class="docutils literal notranslate"><span class="pre">prediction</span></code> is the rounded argmax. Confident models cluster near 0.9/0.1; unsure ones near 0.4/0.6 — a cue for <strong>threshold tuning</strong> (e.g. 0.52 instead of 0.5).</p>
+</section>
+<section id="evaluating-the-model">
+<h2>6.7 Evaluating the model<a class="headerlink" href="#evaluating-the-model" title="Link to this heading">#</a></h2>
+<p>Inspect the predictions with a <strong>confusion matrix</strong> (top-left TN, bottom-right TP, top-right FP, bottom-left FN). Accuracy alone misleads on <strong>imbalanced</strong> data (predicting “never dessert” could be 80% accurate), so use:</p>
+<ul class="simple">
+<li><p><strong>Recall</strong> — of the actual 1s, how many you caught = TP / (TP + FN). <em>Mnemonic: <strong>R</strong> is for <strong>R</strong>ow and <strong>R</strong>ecall.</em></p></li>
+<li><p><strong>Precision</strong> — of your predicted 1s, how many are right = TP / (TP + FP) (a <strong>column</strong>).</p></li>
+<li><p><strong>F1</strong> — the harmonic mean, <code class="docutils literal notranslate"><span class="pre">2·P·R</span> <span class="pre">/</span> <span class="pre">(P+R)</span></code>; it collapses if the model predicts only one class, so it’s more robust than accuracy (use a <strong>weighted</strong> F1 across classes via support proportions).</p></li>
+</ul>
+<p>The <strong>ROC curve</strong> sweeps the decision threshold; a confident model’s true-positive rate spikes toward the top-left, and the <strong>AUC</strong> (area under the curve) ranks models — the 45° line is random guessing. The fraud analogy: to catch all fraud you accept false positives (high <strong>recall</strong>, lower <strong>precision</strong> — the annoying “did you buy this?” texts).</p>
+</section>
+<section id="cross-validation-and-hyperparameter-tuning">
+<h2>6.8 Cross-validation and hyperparameter tuning<a class="headerlink" href="#cross-validation-and-hyperparameter-tuning" title="Link to this heading">#</a></h2>
+<p>Rather than a single holdout, use <strong><code class="docutils literal notranslate"><span class="pre">CrossValidator</span></code></strong> with a <strong><code class="docutils literal notranslate"><span class="pre">ParamGridBuilder</span></code></strong>. For a decision-tree regressor, tuning <code class="docutils literal notranslate"><span class="pre">maxDepth</span></code> and <code class="docutils literal notranslate"><span class="pre">maxBins</span></code> (5 values each) over <strong>5-fold</strong> CV fits <strong>5 × 5 × 5 = 125</strong> models, scored by a <strong><code class="docutils literal notranslate"><span class="pre">RegressionEvaluator</span></code></strong> (e.g. RMSE) with explicit <code class="docutils literal notranslate"><span class="pre">predictionCol</span></code>/<code class="docutils literal notranslate"><span class="pre">labelCol</span></code>. Read <code class="docutils literal notranslate"><span class="pre">avgMetrics</span></code> (25 configs), pick the best with <strong><code class="docutils literal notranslate"><span class="pre">argmin</span></code></strong> (RMSE — lower is better; best here <code class="docutils literal notranslate"><span class="pre">maxDepth=10</span></code>, <code class="docutils literal notranslate"><span class="pre">maxBins=100</span></code>), and <code class="docutils literal notranslate"><span class="pre">bestModel.transform(new_data)</span></code>. The spread across configs can be <strong>20–40% RMSE</strong> — hyperparameter tuning genuinely matters. The same script works for any tree-based model (swap the param names for SVM, etc.).</p>
+</section>
+<section id="extracting-results-and-where-to-go">
+<h2>6.9 Extracting results, and where to go<a class="headerlink" href="#extracting-results-and-where-to-go" title="Link to this heading">#</a></h2>
+<p>Pull the <strong>coefficients from the cross-validated best model</strong> — carefully: it’s <code class="docutils literal notranslate"><span class="pre">pipeline_model.stages[-1]</span></code>, <em>not</em> the earlier standalone <code class="docutils literal notranslate"><span class="pre">lr_model</span></code> (an easy mix-up). For a random forest, print <strong>feature importances</strong> for interpretability. <strong>Summary:</strong> transformers add columns via <code class="docutils literal notranslate"><span class="pre">transform</span></code>; estimators learn via <code class="docutils literal notranslate"><span class="pre">fit</span></code> then <code class="docutils literal notranslate"><span class="pre">transform</span></code>; ML pipelines are estimator-like (<code class="docutils literal notranslate"><span class="pre">fit</span></code> yields a pipeline model); all features must be assembled into one dense vector; use classification metrics (precision/recall/F1/AUC) or regression metrics; and cross-validate to generalize. From here, explore <strong>regression</strong> and <strong>multi-class</strong> problems.</p>
+</section>
+<section id="running-spark-on-hpc">
+<h2>6.10 Running Spark on HPC<a class="headerlink" href="#running-spark-on-hpc" title="Link to this heading">#</a></h2>
+<p>For real horsepower, connect to the UConn <strong>HPC</strong> cluster: connect the <strong>VPN</strong> (Cisco AnyConnect), SSH to the login node, request resources with <strong><code class="docutils literal notranslate"><span class="pre">srun</span></code></strong> (classroom partition, ~4-hour timeout), then <strong><code class="docutils literal notranslate"><span class="pre">module</span> <span class="pre">load</span> <span class="pre">vscode</span></code></strong> and open a <strong>VS Code tunnel</strong> (authenticate via Microsoft account, <code class="docutils literal notranslate"><span class="pre">Ctrl+Click</span></code> the device-login link). Point at your Parquet folder with a wildcard and count rows — <strong>44 million rows in ~20 seconds</strong> vs. ~50s in Colab. When done, <strong><code class="docutils literal notranslate"><span class="pre">exit</span></code></strong> the compute and login nodes so you’re not holding resources.</p>
+<hr class="docutils" />
+<p><em>This is the final chapter. Across the course you went from clunky Spark installs to a one-line <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">pyspark</span></code>, from thousand-row prototypes to million-row datasets, and from raw text files to end-to-end ML pipelines. Thanks for taking the journey — now go build something with big data.</em></p>
+<div class="seealso dropdown admonition">
+<p class="admonition-title">🔗 Notebooks for this chapter</p>
+<ul class="simple">
+<li><p><strong>Ch12 — feature engineering &amp; prep</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module4_GetConfident/M4_1_FeatureEngineering/Ch12.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module4_GetConfident/M4_1_FeatureEngineering/Ch12.ipynb">GitHub</a></p></li>
+<li><p><strong>Feature selection</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module4_GetConfident/M4_1_FeatureEngineering/FeatureSelection.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module4_GetConfident/M4_1_FeatureEngineering/FeatureSelection.ipynb">GitHub</a></p></li>
+<li><p><strong>Ch13 — ML pipelines &amp; logistic regression</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module4_GetConfident/M4_2_ML_Pipelines/Ch13.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module4_GetConfident/M4_2_ML_Pipelines/Ch13.ipynb">GitHub</a></p></li>
+<li><p><strong>Regression ML in PySpark (+ cross-validation)</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module4_GetConfident/M4_3_Regression_Advanced/RegressionML_PySpark.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module4_GetConfident/M4_3_Regression_Advanced/RegressionML_PySpark.ipynb">GitHub</a></p></li>
+</ul>
+<p><em>Class exercises &amp; projects:</em></p>
+<ul class="simple">
+<li><p><strong>Project 3 — crypto prediction</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module4_GetConfident/Project_3_Crypto/Project_Crypto_Prediction.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module4_GetConfident/Project_3_Crypto/Project_Crypto_Prediction.ipynb">GitHub</a></p></li>
+</ul>
+</div>
+</section>
+<section id="lecture-key-points">
+<h2>📌 Lecture key points<a class="headerlink" href="#lecture-key-points" title="Link to this heading">#</a></h2>
+<p><em>Distilled takeaways from the video lectures behind this chapter — click each to expand.</em></p>
+<div class="note dropdown admonition">
+<p class="admonition-title">Intro to Databricks Community Edition</p>
+<ul class="simple">
+<li><p>Databricks needs an explicit <strong>cluster</strong> (Compute → Create Compute), unlike Colab’s auto-runtime.</p></li>
+<li><p>Upload to the <strong>file store</strong> (<code class="docutils literal notranslate"><span class="pre">/FileStore/tables/</span></code>); <strong>attach the notebook to the cluster</strong> before running.</p></li>
+<li><p>Read from <strong>DBFS</strong>; writes land in <code class="docutils literal notranslate"><span class="pre">/user/hive/warehouse/</span></code>; manage files with <code class="docutils literal notranslate"><span class="pre">dbutils.fs</span></code> (<code class="docutils literal notranslate"><span class="pre">ls</span></code>, <code class="docutils literal notranslate"><span class="pre">rm</span></code>).</p></li>
+<li><p>PySpark runs <strong>natively</strong> (no install); notebooks mix R/Python/Scala/SQL via <code class="docutils literal notranslate"><span class="pre">%</span></code> magics; export as <code class="docutils literal notranslate"><span class="pre">.ipynb</span></code>.</p></li>
+</ul>
+</div>
+<div class="note dropdown admonition">
+<p class="admonition-title">Imputing binary features and capping max values</p>
+<ul class="simple">
+<li><p><strong>Drop null targets</strong>; impute <strong>binary</strong> features with <strong>0</strong> (not the mean) — the mean is meaningless for 0/1.</p></li>
+<li><p>Fix string-typed numeric columns with an <strong><code class="docutils literal notranslate"><span class="pre">is_a_number</span></code> UDF</strong>, drop the bad row, and <strong>cast to <code class="docutils literal notranslate"><span class="pre">double</span></code></strong>.</p></li>
+<li><p><strong>Cap outliers</strong>: recode below the 1st percentile up, above the 99th down (truncation), <strong>preserving nulls</strong>.</p></li>
+<li><p>Prefer PySpark percentile functions over hard-coded thresholds.</p></li>
+</ul>
+</div>
+<div class="note dropdown admonition">
+<p class="admonition-title">Working with the VectorAssembler and correlation</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">VectorAssembler</span></code></strong> (a transformer) merges numeric columns into one <strong>vector-typed</strong> column via <code class="docutils literal notranslate"><span class="pre">.transform()</span></code>.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">Correlation.corr</span></code></strong> returns a <strong>1×1 DataFrame</strong> holding a dense matrix — select <code class="docutils literal notranslate"><span class="pre">[0][0]</span></code> → array → labeled pandas heatmap.</p></li>
+<li><p>Drop <strong>highly correlated</strong> features (redundant info confuses the model).</p></li>
+<li><p><strong>Transformer</strong> = no learned params (<code class="docutils literal notranslate"><span class="pre">transform</span></code>); <strong>Estimator</strong> = learns via <code class="docutils literal notranslate"><span class="pre">fit</span></code>, yields a model.</p></li>
+</ul>
+</div>
+<div class="note dropdown admonition">
+<p class="admonition-title">Transformers and Estimators with Imputer and MinMaxScaler</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">Imputer</span></code></strong> (estimator) learns column means on <code class="docutils literal notranslate"><span class="pre">fit</span></code>, fills nulls on <code class="docutils literal notranslate"><span class="pre">transform</span></code> (suffix <code class="docutils literal notranslate"><span class="pre">_i</span></code> to compare).</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">MinMaxScaler</span></code></strong> (estimator) learns min/max on <code class="docutils literal notranslate"><span class="pre">fit</span></code>, rescales the <strong>vector</strong> column to [0, 1].</p></li>
+<li><p>The reusable recipe: split into <strong>identifiers / continuous / binary / target</strong>, impute, assemble, scale.</p></li>
+<li><p>Use PySpark for big data (pandas caps ~30–40 GB); PySpark keeps going at 70 GB+.</p></li>
+</ul>
+</div>
+<div class="note dropdown admonition">
+<p class="admonition-title">Building and updating our first pipeline</p>
+<ul class="simple">
+<li><p>A <strong><code class="docutils literal notranslate"><span class="pre">Pipeline</span></code></strong> chains stages as <strong>instructions</strong> (no data): Imputer → assembler → scaler → <strong>pre-ML assembler</strong>.</p></li>
+<li><p>Combine scaled continuous <strong>plus</strong> binary/ratio columns into one final <strong><code class="docutils literal notranslate"><span class="pre">features</span></code></strong> vector (no multiple vector columns).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fit().transform()</span></code> runs it; update stages with <strong><code class="docutils literal notranslate"><span class="pre">setStages</span></code></strong>.</p></li>
+<li><p>Vectors print <strong>sparse</strong> (positions+values) or <strong>dense</strong>; ML metadata (column names per index) lives in the schema.</p></li>
+</ul>
+</div>
+<div class="note dropdown admonition">
+<p class="admonition-title">Adding a logistic regression classifier</p>
+<ul class="simple">
+<li><p>Append <strong><code class="docutils literal notranslate"><span class="pre">LogisticRegression</span></code></strong> with <code class="docutils literal notranslate"><span class="pre">featuresCol</span></code>, <code class="docutils literal notranslate"><span class="pre">labelCol</span></code>, <code class="docutils literal notranslate"><span class="pre">predictionCol</span></code> as the pipeline’s last stage.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">randomSplit</span></code></strong> into train/test with a seed; <code class="docutils literal notranslate"><span class="pre">fit</span></code> on train, <code class="docutils literal notranslate"><span class="pre">transform</span></code> on test — pipeline references column names, no <code class="docutils literal notranslate"><span class="pre">X_train</span></code>/<code class="docutils literal notranslate"><span class="pre">y_train</span></code>.</p></li>
+<li><p>Output has <strong><code class="docutils literal notranslate"><span class="pre">rawPrediction</span></code></strong>, <strong><code class="docutils literal notranslate"><span class="pre">probability</span></code></strong> (P(0), P(1)), and rounded <strong><code class="docutils literal notranslate"><span class="pre">prediction</span></code></strong>; logit → prob via <code class="docutils literal notranslate"><span class="pre">e^x/(1+e^x)</span></code>.</p></li>
+<li><p>Confident models cluster near 0.9/0.1 — a cue for <strong>threshold tuning</strong>; classifiers are hot-swappable.</p></li>
+</ul>
+</div>
+<div class="note dropdown admonition">
+<p class="admonition-title">Evaluating the model</p>
+<ul class="simple">
+<li><p>Accuracy misleads on <strong>imbalanced</strong> data — use precision, recall, F1.</p></li>
+<li><p><strong>Recall</strong> = TP/(TP+FN) (<em>R for Row/Recall</em>); <strong>Precision</strong> = TP/(TP+FP) (a column).</p></li>
+<li><p><strong>F1</strong> = harmonic mean <code class="docutils literal notranslate"><span class="pre">2PR/(P+R)</span></code>, robust to one-class prediction; prefer a <strong>weighted</strong> F1.</p></li>
+<li><p>The <strong>ROC/AUC</strong> ranks models by confidence across thresholds; the 45° line is random guessing.</p></li>
+</ul>
+</div>
+<div class="note dropdown admonition">
+<p class="admonition-title">Where do we go from here</p>
+<ul class="simple">
+<li><p>Pull coefficients from the <strong>cross-validated best model</strong> (<code class="docutils literal notranslate"><span class="pre">pipeline_model.stages[-1]</span></code>), not the standalone <code class="docutils literal notranslate"><span class="pre">lr_model</span></code>.</p></li>
+<li><p>For a random forest, print <strong>feature importances</strong> for interpretability.</p></li>
+<li><p>Summary: transformers add columns; estimators <code class="docutils literal notranslate"><span class="pre">fit</span></code> then <code class="docutils literal notranslate"><span class="pre">transform</span></code>; pipelines are estimator-like; assemble one dense vector.</p></li>
+<li><p>Next: explore <strong>regression</strong> and <strong>multi-class</strong> problems in PySpark.</p></li>
+</ul>
+</div>
+<div class="note dropdown admonition">
+<p class="admonition-title">Cross-validator for ML regression</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">CrossValidator</span></code></strong> + <strong><code class="docutils literal notranslate"><span class="pre">ParamGridBuilder</span></code></strong> tunes hyperparameters (e.g. <code class="docutils literal notranslate"><span class="pre">maxDepth</span></code>, <code class="docutils literal notranslate"><span class="pre">maxBins</span></code>) over k folds.</p></li>
+<li><p>5 values × 5 values × 5 folds = <strong>125 models</strong>, scored by a <code class="docutils literal notranslate"><span class="pre">RegressionEvaluator</span></code> (RMSE).</p></li>
+<li><p>Pick the best via <strong><code class="docutils literal notranslate"><span class="pre">argmin</span></code></strong> on <code class="docutils literal notranslate"><span class="pre">avgMetrics</span></code> (lower RMSE); apply <code class="docutils literal notranslate"><span class="pre">bestModel.transform(new_data)</span></code>.</p></li>
+<li><p>Config spread can be <strong>20–40% RMSE</strong> — hyperparameter tuning genuinely matters; the script generalizes to any tree model.</p></li>
+</ul>
+</div>
+<div class="note dropdown admonition">
+<p class="admonition-title">A personal note from Dave</p>
+<ul class="simple">
+<li><p>First time teaching the course — thanks to Jonathan Rioux (book), Databricks, and Colab.</p></li>
+<li><p>The class went from clunky installs to a one-line <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">pyspark</span></code>.</p></li>
+<li><p>You worked with million-row datasets and prototyped on thousand-row ones.</p></li>
+<li><p>Goal: feel ready to interact with big data and carry these skills to the job.</p></li>
+</ul>
+</div>
+<div class="note dropdown admonition">
+<p class="admonition-title">Connecting to HPC the 2nd time</p>
+<ul class="simple">
+<li><p>Connect the <strong>VPN</strong> (Cisco AnyConnect), SSH to the login node, request resources with <strong><code class="docutils literal notranslate"><span class="pre">srun</span></code></strong> (classroom partition).</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">module</span> <span class="pre">load</span> <span class="pre">vscode</span></code></strong>, open a <strong>VS Code tunnel</strong>, authenticate via Microsoft account + device-login link.</p></li>
+<li><p>Counting a Parquet folder: <strong>44M rows in ~20s</strong> on HPC vs. ~50s in Colab.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">exit</span></code></strong> the compute and login nodes when done so you don’t hold resources.</p></li>
+</ul>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="module-5-window-functions.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Chapter 5 — Window Functions</p>
+      </div>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#databricks-community-edition">6.1 Databricks Community Edition</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-prep-imputing-binaries-and-capping-outliers">6.2 Data prep: imputing binaries and capping outliers</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#vectorassembler-correlation-transformers-vs-estimators">6.3 VectorAssembler, correlation, transformers vs. estimators</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#imputer-and-minmaxscaler-estimators">6.4 Imputer and MinMaxScaler (estimators)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#building-a-pipeline">6.5 Building a Pipeline</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#adding-a-logistic-regression-classifier">6.6 Adding a logistic-regression classifier</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluating-the-model">6.7 Evaluating the model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cross-validation-and-hyperparameter-tuning">6.8 Cross-validation and hyperparameter tuning</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#extracting-results-and-where-to-go">6.9 Extracting results, and where to go</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#running-spark-on-hpc">6.10 Running Spark on HPC</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lecture-key-points">📌 Lecture key points</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Dr. Dave Wanik · University of Connecticut (OPIM 5502)
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

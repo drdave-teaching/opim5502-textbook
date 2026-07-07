@@ -1,0 +1,552 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Chapter 3 — Complex Data: JSON, Arrays, Maps &amp; Schemas &#8212; Big Data with PySpark</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=b8b12719"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'module-3-complex-data-json';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Chapter 4 — RDDs &amp; UDFs" href="module-4-rdds-and-udfs.html" />
+    <link rel="prev" title="Chapter 2 — DataFrames: EDA, Joins &amp; SQL" href="module-2-dataframes-joins-sql.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+<aside class="bd-header-announcement" aria-label="Announcement">
+  <div class="bd-header-announcement__content">⚡ <strong>OPIM 5502 · Big Data with PySpark</strong> — draft course companion (work in progress)</div>
+</aside>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Big Data with PySpark</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="module-1-spark-fundamentals.html">Chapter 1 — Spark Fundamentals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module-2-dataframes-joins-sql.html">Chapter 2 — DataFrames: EDA, Joins &amp; SQL</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Chapter 3 — Complex Data: JSON, Arrays, Maps &amp; Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module-4-rdds-and-udfs.html">Chapter 4 — RDDs &amp; UDFs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module-5-window-functions.html">Chapter 5 — Window Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module-6-machine-learning.html">Chapter 6 — Machine Learning with Spark MLlib</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/module-3-complex-data-json.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Chapter 3 — Complex Data: JSON, Arrays, Maps & Schemas</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-json">3.1 What is JSON?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#array-operations">3.2 Array operations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#maps-and-structs">3.3 Maps and structs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#schemas">3.4 Schemas</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-real-world-example-senators-json">3.5 A real-world example: Senators JSON</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lecture-key-points">📌 Lecture key points</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="chapter-3-complex-data-json-arrays-maps-schemas">
+<h1>Chapter 3 — Complex Data: JSON, Arrays, Maps &amp; Schemas<a class="headerlink" href="#chapter-3-complex-data-json-arrays-maps-schemas" title="Link to this heading">#</a></h1>
+<p>Real-world data isn’t always a flat table. This chapter tackles <strong>JSON</strong> — the nested, hierarchical format you meet when pulling from web APIs — and the <strong>complex column types</strong> Spark uses to represent it: <strong>arrays</strong>, <strong>maps</strong>, and <strong>structs</strong>. We learn the array functions, how structs nest columns, how to <strong>impose a schema</strong> for speed and data governance, and finally work a messy real-world <strong>Senators JSON</strong> end to end. Using TV-show data (Silicon Valley, Breaking Bad, Golden Girls), we flatten dense nested files into the 2-D tables that downstream tools expect.</p>
+<section id="what-is-json">
+<h2>3.1 What is JSON?<a class="headerlink" href="#what-is-json" title="Link to this heading">#</a></h2>
+<p><strong>JSON</strong> (JavaScript Object Notation) is the dominant format for exchanging data between a client and a server, so most web data runs on it. Mentally, a JSON document is a <strong>limited Python dictionary</strong>: it opens with a curly brace (an <strong>object</strong>), holds <strong>key–value pairs</strong> where the <strong>keys are always strings</strong>, and the values can be numbers, booleans, strings, null, <strong>arrays</strong> (square brackets, like a Python list), or nested <strong>objects</strong>. That nesting is the point: think of a JSON file as a spreadsheet where a column can itself hold another spreadsheet.</p>
+<p>The payoff over CSV is <strong>efficiency — no duplicated data</strong>. A show’s ID and URL are stored <strong>once</strong>, with the 53 episodes nested underneath, whereas a flat CSV keyed on episode would repeat the show ID and link 53 times. These show files are tiny (~half a MB) but <strong>dense</strong>. A key quirk: even a file packed with 53 episodes is a <strong>single line</strong> of text — compact and efficient storage, ideal for databases.</p>
+</section>
+<section id="array-operations">
+<h2>3.2 Array operations<a class="headerlink" href="#array-operations" title="Link to this heading">#</a></h2>
+<p>Spark represents a JSON array as an <strong>array column</strong> — multiple elements that must all be the <strong>same type</strong>. PySpark’s array functions mostly carry the <strong><code class="docutils literal notranslate"><span class="pre">array_</span></code> prefix</strong>:</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">array_distinct</span></code></strong> — the unique elements of an array (e.g. <code class="docutils literal notranslate"><span class="pre">[comedy,</span> <span class="pre">horror,</span> <span class="pre">comedy,</span> <span class="pre">drama,</span> <span class="pre">comedy]</span></code> → <code class="docutils literal notranslate"><span class="pre">[comedy,</span> <span class="pre">horror,</span> <span class="pre">drama]</span></code>); conceptually like a per-row <code class="docutils literal notranslate"><span class="pre">distinct</span></code>.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">array_intersect(a,</span> <span class="pre">b)</span></code></strong> — what two array columns have in common (similar in spirit to pandas <code class="docutils literal notranslate"><span class="pre">isin</span></code>), typically used inside <code class="docutils literal notranslate"><span class="pre">select(...).alias(&quot;genres&quot;)</span></code>.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">array_position(col,</span> <span class="pre">value)</span></code></strong> — the index of an element. <strong>Important:</strong> positions count from <strong>1, not 0</strong> — <code class="docutils literal notranslate"><span class="pre">horror</span></code> in <code class="docutils literal notranslate"><span class="pre">[comedy,</span> <span class="pre">horror]</span></code> returns <strong>2</strong>.</p></li>
+</ul>
+<p>(A live-coding aside worth remembering: aliasing a column and then referencing its <em>original</em> name causes “column not found” errors — keep track of what you’ve renamed.)</p>
+</section>
+<section id="maps-and-structs">
+<h2>3.3 Maps and structs<a class="headerlink" href="#maps-and-structs" title="Link to this heading">#</a></h2>
+<p>A <strong>map</strong> is close to a Python dictionary but <strong>typed</strong>: all keys share one type and all values share one type (key-type and value-type may differ). Build one from two array columns with <strong><code class="docutils literal notranslate"><span class="pre">map_from_arrays(keys,</span> <span class="pre">values)</span></code></strong>. Maps are optional here since the show data doesn’t use them.</p>
+<p>The workhorse is the <strong>struct</strong> — for <strong>nesting columns within a column</strong>. Unlike an array (same-typed, key-less elements), a struct is like a JSON object: named fields (string keys) whose values can be <strong>different types</strong>, including arrays <em>and</em> single strings. The show data has structs such as <code class="docutils literal notranslate"><span class="pre">schedule</span></code> and <code class="docutils literal notranslate"><span class="pre">ratings</span></code>. Navigate into one with dotted <code class="docutils literal notranslate"><span class="pre">select</span></code> (e.g. <code class="docutils literal notranslate"><span class="pre">show.embedded</span></code>), and clean up the annoying nesting: the <code class="docutils literal notranslate"><span class="pre">_embedded</span></code> struct here holds a single element, so you <strong>select <code class="docutils literal notranslate"><span class="pre">episodes</span></code></strong>, pull the fields out from under <code class="docutils literal notranslate"><span class="pre">_embedded</span></code>, and <strong>drop</strong> the now-useless struct to get a shallower layout. To turn a struct’s array field into rows, <strong><code class="docutils literal notranslate"><span class="pre">explode</span></code></strong> it — e.g. exploding episode summaries into one row each, then <code class="docutils literal notranslate"><span class="pre">count()</span></code> confirms <strong>53 episodes</strong> in Silicon Valley (matching reality). This is the recurring goal: flatten an elegant-but-tricky nested behemoth into a <strong>business-friendly 2-D file</strong>.</p>
+</section>
+<section id="schemas">
+<h2>3.4 Schemas<a class="headerlink" href="#schemas" title="Link to this heading">#</a></h2>
+<p>Accepting Spark’s inferred schema for JSON works, but being <strong>explicit</strong> is faster and enforces <strong>data governance</strong> — clean, standardized types instead of everything falling back to strings on dirty data. Import the types module as <strong><code class="docutils literal notranslate"><span class="pre">T</span></code></strong> (alongside functions as <code class="docutils literal notranslate"><span class="pre">F</span></code>). Types use camelCase: <code class="docutils literal notranslate"><span class="pre">LongType</span></code>, <code class="docutils literal notranslate"><span class="pre">StringType</span></code>, <code class="docutils literal notranslate"><span class="pre">DateType</span></code>, <code class="docutils literal notranslate"><span class="pre">TimestampType</span></code>, and <code class="docutils literal notranslate"><span class="pre">DecimalType</span></code> (the only one taking arguments — precision and scale). Compose complex types with <strong><code class="docutils literal notranslate"><span class="pre">ArrayType(StringType())</span></code></strong>, and build records from <strong><code class="docutils literal notranslate"><span class="pre">StructType</span></code></strong> + <strong><code class="docutils literal notranslate"><span class="pre">StructField(name,</span> <span class="pre">dataType,</span> <span class="pre">nullable)</span></code></strong> (plus optional metadata, revisited in ch. 13).</p>
+<p>A powerful trick: define the fiddly sub-schemas first and <strong>inherit</strong> them by variable. The <code class="docutils literal notranslate"><span class="pre">episode_link_schema</span></code> (a struct → <code class="docutils literal notranslate"><span class="pre">self</span></code> struct → <code class="docutils literal notranslate"><span class="pre">href</span></code> string) and <code class="docutils literal notranslate"><span class="pre">episode_image_schema</span></code> (medium/original hyperlink strings) look gnarly out of context, but once defined they slot cleanly into <code class="docutils literal notranslate"><span class="pre">episode_schema</span></code>, keeping that code readable — and you can cast <code class="docutils literal notranslate"><span class="pre">airdate</span></code> to a real <strong><code class="docutils literal notranslate"><span class="pre">DateType</span></code></strong> and <code class="docutils literal notranslate"><span class="pre">airstamp</span></code> to <strong><code class="docutils literal notranslate"><span class="pre">TimestampType</span></code></strong>. Because this file nests everything under <code class="docutils literal notranslate"><span class="pre">_embedded</span></code>, wrap it once more in an <code class="docutils literal notranslate"><span class="pre">embedded_schema</span></code>, then read with <strong><code class="docutils literal notranslate"><span class="pre">schema=embedded_schema</span></code></strong> and <strong><code class="docutils literal notranslate"><span class="pre">mode=&quot;FAILFAST&quot;</span></code></strong> so a schema mismatch <strong>errors immediately</strong> rather than silently coercing to strings. The result reads fast and clean over just the useful subset, and dates/timestamps come back correctly formatted. (Handy along the way: <strong>f-strings</strong> for quick string substitution when selecting columns.)</p>
+</section>
+<section id="a-real-world-example-senators-json">
+<h2>3.5 A real-world example: Senators JSON<a class="headerlink" href="#a-real-world-example-senators-json" title="Link to this heading">#</a></h2>
+<p>Working a genuine <strong>Senators JSON</strong> file surfaces the practical snags:</p>
+<ul class="simple">
+<li><p><strong>“Corrupt record” on read</strong> — the data was all there, but the file is <strong>multi-line</strong> (top-level metadata, then everything under an <code class="docutils literal notranslate"><span class="pre">objects</span></code> key). Adding <strong><code class="docutils literal notranslate"><span class="pre">multiLine=True</span></code></strong> fixes it. Expect this on other real JSON files.</p></li>
+<li><p><strong>The double-explode trap</strong> — exploding <strong>two</strong> array columns at once does a <strong>cross join</strong>: 100 senators × 100 addresses = <strong>10,000</strong> rows. Exploding one gives the right 100. The fix is <strong><code class="docutils literal notranslate"><span class="pre">arrays_zip</span></code></strong> to pair party and office <strong>together</strong> before a single explode.</p></li>
+<li><p><strong>Renaming struct keys</strong> — a zipped struct comes out with fields named <code class="docutils literal notranslate"><span class="pre">0</span></code> and <code class="docutils literal notranslate"><span class="pre">1</span></code>; rename them by applying an updated schema, then drop the struct and re-select the individual columns for a tidy 100-row table.</p></li>
+<li><p><strong>String wrangling</strong> — office strings mix numbers and building names, so <strong><code class="docutils literal notranslate"><span class="pre">split</span></code></strong> on spaces, pull items one at a time (no slicing on <code class="docutils literal notranslate"><span class="pre">getItem</span></code>), and <strong><code class="docutils literal notranslate"><span class="pre">concat</span></code></strong> them back with <code class="docutils literal notranslate"><span class="pre">F.lit(&quot;</span> <span class="pre">&quot;)</span></code> literals. Group by building and you learn the Russell/Hart/Dirksen party breakdowns.</p></li>
+</ul>
+<p>The honest lesson Dave shares: one question took an hour or two, because <strong>not every function is in the book</strong> — you search your resources, read the schema constantly, and practice. Structs and JSON are the hardest data to work with, which is exactly why they’re worth practicing before a web-scraping project.</p>
+<div class="seealso dropdown admonition">
+<p class="admonition-title">🔗 Notebooks for this chapter</p>
+<ul class="simple">
+<li><p><strong>Ch6 — JSON, arrays, maps, structs, schemas</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_JSON_and_SQL/Module3_1_JSON/Ch6.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_JSON_and_SQL/Module3_1_JSON/Ch6.ipynb">GitHub</a></p></li>
+<li><p><strong>Senators JSON — real-world example</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_JSON_and_SQL/Module3_1_JSON/JSON_Senators.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_JSON_and_SQL/Module3_1_JSON/JSON_Senators.ipynb">GitHub</a></p></li>
+</ul>
+<p><em>Class exercises &amp; projects:</em></p>
+<ul class="simple">
+<li><p><strong>Class exercise — JSON (blank)</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_JSON_and_SQL/Module3_1_JSON/ClassJSON_Exercise_blank.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_JSON_and_SQL/Module3_1_JSON/ClassJSON_Exercise_blank.ipynb">GitHub</a></p></li>
+<li><p><strong>Class exercise — more JSON examples</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_JSON_and_SQL/Module3_1_JSON/ClassExercise_JSON_moreExamples.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_JSON_and_SQL/Module3_1_JSON/ClassExercise_JSON_moreExamples.ipynb">GitHub</a></p></li>
+<li><p><strong>Extra — COVID JSON</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_JSON_and_SQL/Module3_1_JSON/extra/ClassExercise_JSON_COVID.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_JSON_and_SQL/Module3_1_JSON/extra/ClassExercise_JSON_COVID.ipynb">GitHub</a></p></li>
+<li><p><strong>Extra — TV Shows JSON</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_JSON_and_SQL/Module3_1_JSON/extra/ClassExercise_JSON_Shows.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_JSON_and_SQL/Module3_1_JSON/extra/ClassExercise_JSON_Shows.ipynb">GitHub</a></p></li>
+</ul>
+</div>
+</section>
+<section id="lecture-key-points">
+<h2>📌 Lecture key points<a class="headerlink" href="#lecture-key-points" title="Link to this heading">#</a></h2>
+<p><em>Distilled takeaways from the video lectures behind this chapter — click each to expand.</em></p>
+<div class="note dropdown admonition">
+<p class="admonition-title">Introduction to JSON files</p>
+<ul class="simple">
+<li><p>A JSON document is a <strong>limited Python dictionary</strong>: opens with <code class="docutils literal notranslate"><span class="pre">{</span></code>, holds <strong>key–value pairs</strong>, keys are always strings.</p></li>
+<li><p>Values can be numbers, booleans, strings, null, <strong>arrays</strong> (<code class="docutils literal notranslate"><span class="pre">[...]</span></code>, like a list), or nested <strong>objects</strong> (<code class="docutils literal notranslate"><span class="pre">{...}</span></code>).</p></li>
+<li><p>JSON is efficient — shared data (show ID, URL) is stored <strong>once</strong> with episodes nested, vs. a CSV repeating it per row.</p></li>
+<li><p>Even a file with 53 episodes is a <strong>single dense line</strong> of text — compact storage, great for databases.</p></li>
+</ul>
+</div>
+<div class="note dropdown admonition">
+<p class="admonition-title">Array operations (distinct, intersect, position)</p>
+<ul class="simple">
+<li><p>A Spark <strong>array column</strong> holds multiple elements that must all be the <strong>same type</strong>.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">array_distinct</span></code></strong> returns unique elements; <strong><code class="docutils literal notranslate"><span class="pre">array_intersect(a,</span> <span class="pre">b)</span></code></strong> returns what two array columns share (like <code class="docutils literal notranslate"><span class="pre">isin</span></code>).</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">array_position(col,</span> <span class="pre">value)</span></code></strong> counts from <strong>1, not 0</strong>.</p></li>
+<li><p>Watch aliasing: referencing a column by its pre-alias name causes “column not found” errors.</p></li>
+</ul>
+</div>
+<div class="note dropdown admonition">
+<p class="admonition-title">Maps and structs</p>
+<ul class="simple">
+<li><p>A <strong>map</strong> is a typed dictionary (uniform key type, uniform value type); build with <strong><code class="docutils literal notranslate"><span class="pre">map_from_arrays</span></code></strong>.</p></li>
+<li><p>A <strong>struct</strong> nests <strong>named fields of mixed types</strong> (like a JSON object) — e.g. <code class="docutils literal notranslate"><span class="pre">schedule</span></code>, <code class="docutils literal notranslate"><span class="pre">ratings</span></code>.</p></li>
+<li><p>Navigate with dotted <code class="docutils literal notranslate"><span class="pre">select</span></code> (<code class="docutils literal notranslate"><span class="pre">show.embedded</span></code>); drop single-element structs to flatten the layout.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">explode</span></code></strong> turns a struct’s array field into rows; <code class="docutils literal notranslate"><span class="pre">count()</span></code> confirmed 53 Silicon Valley episodes.</p></li>
+</ul>
+</div>
+<div class="note dropdown admonition">
+<p class="admonition-title">Schemas</p>
+<ul class="simple">
+<li><p>Explicit schemas are <strong>faster</strong> and enforce <strong>data governance</strong> (types instead of everything-as-string on dirty data).</p></li>
+<li><p>Import types as <strong><code class="docutils literal notranslate"><span class="pre">T</span></code></strong>; use <code class="docutils literal notranslate"><span class="pre">StructType</span></code>/<code class="docutils literal notranslate"><span class="pre">StructField(name,</span> <span class="pre">type,</span> <span class="pre">nullable)</span></code>, <code class="docutils literal notranslate"><span class="pre">ArrayType</span></code>, <code class="docutils literal notranslate"><span class="pre">DateType</span></code>, <code class="docutils literal notranslate"><span class="pre">TimestampType</span></code>, <code class="docutils literal notranslate"><span class="pre">DecimalType</span></code>.</p></li>
+<li><p>Define fiddly sub-schemas first and <strong>inherit</strong> them by variable to keep the main schema readable.</p></li>
+<li><p>Read with <code class="docutils literal notranslate"><span class="pre">schema=...</span></code> and <strong><code class="docutils literal notranslate"><span class="pre">mode=&quot;FAILFAST&quot;</span></code></strong> so mismatches error immediately instead of coercing to strings.</p></li>
+</ul>
+</div>
+<div class="note dropdown admonition">
+<p class="admonition-title">Playing with Senators JSON</p>
+<ul class="simple">
+<li><p>A “corrupt record” on a valid file usually means it’s <strong>multi-line</strong> — add <strong><code class="docutils literal notranslate"><span class="pre">multiLine=True</span></code></strong>.</p></li>
+<li><p>Exploding <strong>two</strong> arrays at once does a <strong>cross join</strong> (100×100 = 10,000); use <strong><code class="docutils literal notranslate"><span class="pre">arrays_zip</span></code></strong> then a single <code class="docutils literal notranslate"><span class="pre">explode</span></code>.</p></li>
+<li><p>Zipped structs get fields named <code class="docutils literal notranslate"><span class="pre">0</span></code>/<code class="docutils literal notranslate"><span class="pre">1</span></code> — rename via an updated schema, then drop and re-select.</p></li>
+<li><p>Real work needs <code class="docutils literal notranslate"><span class="pre">split</span></code>, <code class="docutils literal notranslate"><span class="pre">getItem</span></code>, <code class="docutils literal notranslate"><span class="pre">concat</span></code>, and <code class="docutils literal notranslate"><span class="pre">F.lit(...)</span></code>; read the schema constantly and expect to search beyond the book.</p></li>
+</ul>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="module-2-dataframes-joins-sql.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Chapter 2 — DataFrames: EDA, Joins &amp; SQL</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="module-4-rdds-and-udfs.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Chapter 4 — RDDs &amp; UDFs</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-json">3.1 What is JSON?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#array-operations">3.2 Array operations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#maps-and-structs">3.3 Maps and structs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#schemas">3.4 Schemas</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-real-world-example-senators-json">3.5 A real-world example: Senators JSON</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lecture-key-points">📌 Lecture key points</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Dr. Dave Wanik · University of Connecticut (OPIM 5502)
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

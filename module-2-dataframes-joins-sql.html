@@ -1,0 +1,631 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Chapter 2 — DataFrames: EDA, Joins &amp; SQL &#8212; Big Data with PySpark</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=b8b12719"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'module-2-dataframes-joins-sql';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Chapter 3 — Complex Data: JSON, Arrays, Maps &amp; Schemas" href="module-3-complex-data-json.html" />
+    <link rel="prev" title="Chapter 1 — Spark Fundamentals" href="module-1-spark-fundamentals.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+<aside class="bd-header-announcement" aria-label="Announcement">
+  <div class="bd-header-announcement__content">⚡ <strong>OPIM 5502 · Big Data with PySpark</strong> — draft course companion (work in progress)</div>
+</aside>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Big Data with PySpark</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="module-1-spark-fundamentals.html">Chapter 1 — Spark Fundamentals</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Chapter 2 — DataFrames: EDA, Joins &amp; SQL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module-3-complex-data-json.html">Chapter 3 — Complex Data: JSON, Arrays, Maps &amp; Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module-4-rdds-and-udfs.html">Chapter 4 — RDDs &amp; UDFs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module-5-window-functions.html">Chapter 5 — Window Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module-6-machine-learning.html">Chapter 6 — Machine Learning with Spark MLlib</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/module-2-dataframes-joins-sql.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Chapter 2 — DataFrames: EDA, Joins & SQL</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reading-a-csv-and-first-looks">2.1 Reading a CSV and first looks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selecting-dropping-renaming-engineering-columns">2.2 Selecting, dropping, renaming, engineering columns</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#describing-data">2.3 Describing data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#joining-dataframes">2.4 Joining DataFrames</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-monstrous-query">2.5 The “monstrous” query</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#registering-views-and-sql-union-vs-join">2.6 Registering views and SQL: UNION vs JOIN</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-backblaze-dataset">2.7 The Backblaze dataset</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pyspark-vs-sql-and-blending-them">2.8 PySpark vs. SQL, and blending them</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lecture-key-points">📌 Lecture key points</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="chapter-2-dataframes-eda-joins-sql">
+<h1>Chapter 2 — DataFrames: EDA, Joins &amp; SQL<a class="headerlink" href="#chapter-2-dataframes-eda-joins-sql" title="Link to this heading">#</a></h1>
+<p>This chapter moves from text to <strong>structured, spreadsheet data</strong>. We read a big CSV, perform an <strong>exploratory data analysis</strong> (select, drop, rename, and engineer columns; describe and summarize), then learn to <strong>join</strong> DataFrames on a common key — culminating in a “monstrous” chained query that answers a real business question. Then we switch languages: registering DataFrames as <strong>SQL views</strong>, comparing <strong>PySpark vs. SQL</strong> side by side, wrangling the multi-file <strong>Backblaze</strong> hard-drive dataset, and finally <strong>blending</strong> the two so you can use the best of each.</p>
+<section id="reading-a-csv-and-first-looks">
+<h2>2.1 Reading a CSV and first looks<a class="headerlink" href="#reading-a-csv-and-first-looks" title="Link to this heading">#</a></h2>
+<p>Spark infers types from a Python list of lists (<code class="docutils literal notranslate"><span class="pre">long</span></code> ≈ integer, <code class="docutils literal notranslate"><span class="pre">double</span></code> ≈ float, <code class="docutils literal notranslate"><span class="pre">string</span></code>), but real data comes from files. Reading a CSV means specifying the <strong>column delimiter</strong> (comma, semicolon, or bar <code class="docutils literal notranslate"><span class="pre">|</span></code>), the <strong>header</strong>, and optionally <code class="docutils literal notranslate"><span class="pre">inferSchema</span></code> and a <code class="docutils literal notranslate"><span class="pre">timestampFormat</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">logs</span> <span class="o">=</span> <span class="p">(</span><span class="n">spark</span><span class="o">.</span><span class="n">read</span>
+        <span class="o">.</span><span class="n">csv</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;|&quot;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inferSchema</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+             <span class="n">timestampFormat</span><span class="o">=</span><span class="s2">&quot;yyyy-MM-dd&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The example dataset is a broadcaster’s <strong>broadcast logs</strong> — ~238,000 rows × 30 columns. A habit worth keeping (not in the book): always check the <strong>row and column counts</strong> so you can anticipate the shape after downstream joins and filters. <code class="docutils literal notranslate"><span class="pre">printSchema()</span></code> shows the 30 columns and their types — integers, strings, and a <code class="docutils literal notranslate"><span class="pre">timestamp</span></code> for the log date. Note <code class="docutils literal notranslate"><span class="pre">duration</span></code> arrives as a <strong>string</strong>, which we’ll fix.</p>
+</section>
+<section id="selecting-dropping-renaming-engineering-columns">
+<h2>2.2 Selecting, dropping, renaming, engineering columns<a class="headerlink" href="#selecting-dropping-renaming-engineering-columns" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">select</span></code> returns a subset of columns (via strings, a list with <code class="docutils literal notranslate"><span class="pre">*</span></code> unpacking, or <code class="docutils literal notranslate"><span class="pre">F.col(...)</span></code>), and remember to <strong><code class="docutils literal notranslate"><span class="pre">.show()</span></code></strong> or the result is just a deferred instruction. To <strong>drop</strong>, you must <strong>overwrite</strong> the DataFrame (<code class="docutils literal notranslate"><span class="pre">logs</span> <span class="pre">=</span> <span class="pre">logs.drop(&quot;a&quot;,</span> <span class="pre">&quot;b&quot;)</span></code>) — like pandas without <code class="docutils literal notranslate"><span class="pre">inplace=True</span></code> — and verify by checking the column count fell (30 → 28).</p>
+<p>The fun part is <strong>feature engineering</strong> the string <code class="docutils literal notranslate"><span class="pre">duration</span></code> (“HH:MM:SS…”). Use <code class="docutils literal notranslate"><span class="pre">substring</span></code> to pull the first two characters (hours), the next two (minutes), and the seconds, <strong>cast</strong> each to integer, and <strong><code class="docutils literal notranslate"><span class="pre">.alias</span></code></strong> them. Then convert to a common unit and sum: <code class="docutils literal notranslate"><span class="pre">hours*3600</span> <span class="pre">+</span> <span class="pre">minutes*60</span> <span class="pre">+</span> <span class="pre">seconds</span></code> → a new <code class="docutils literal notranslate"><span class="pre">duration_seconds</span></code> column added with <strong><code class="docutils literal notranslate"><span class="pre">withColumn</span></code></strong>. Along the way you can <code class="docutils literal notranslate"><span class="pre">withColumnRenamed</span></code>, lowercase all names, or reorder columns alphabetically — but each is only <em>temporary output</em> until you overwrite the DataFrame.</p>
+</section>
+<section id="describing-data">
+<h2>2.3 Describing data<a class="headerlink" href="#describing-data" title="Link to this heading">#</a></h2>
+<p>Two numeric-summary tools: <strong><code class="docutils literal notranslate"><span class="pre">describe()</span></code></strong> gives count/mean/stddev/min/max (mean and stddev are blank for string columns, which still show alphabetical min/max), and <strong><code class="docutils literal notranslate"><span class="pre">summary()</span></code></strong> adds the 25/50/75 percentiles and accepts custom ones (e.g. <code class="docutils literal notranslate"><span class="pre">summary(&quot;min&quot;,&quot;10%&quot;,&quot;90%&quot;,&quot;max&quot;)</span></code>). Both need a trailing <code class="docutils literal notranslate"><span class="pre">.show()</span></code>. The recurring theme: think of PySpark as a tool for building <strong>intermediate reporting tables</strong> at scale, which you then hand to Matplotlib, pandas, Power BI, or Tableau for the actual plotting.</p>
+</section>
+<section id="joining-dataframes">
+<h2>2.4 Joining DataFrames<a class="headerlink" href="#joining-dataframes" title="Link to this heading">#</a></h2>
+<p>Joining works like SQL/pandas/R: a <strong>left</strong> table, a <strong>right</strong> table, a <strong>predicate</strong> (the matching condition), and a <strong>how</strong> (the method). Of the seven join types, the default and most common is the <strong>inner join</strong> (keep only matching keys). Joining <code class="docutils literal notranslate"><span class="pre">logs</span></code> to a <code class="docutils literal notranslate"><span class="pre">log_identifier</span></code> reference table on the shared <code class="docutils literal notranslate"><span class="pre">log_service_id</span></code> grows the data to ~339,000 rows × 33 columns — note the <strong>row count rises</strong> because a key can match multiple rows (duplicates).</p>
+<p>Two wrinkles:</p>
+<ul class="simple">
+<li><p><strong>Multiple predicates:</strong> combine conditions with <code class="docutils literal notranslate"><span class="pre">&amp;</span></code> (AND) and <code class="docutils literal notranslate"><span class="pre">|</span></code> (OR), each condition in parentheses.</p></li>
+<li><p><strong>Different column names:</strong> if the key is <code class="docutils literal notranslate"><span class="pre">key1</span></code> on the left and <code class="docutils literal notranslate"><span class="pre">key2</span></code> on the right, the join duplicates the column and Spark then can’t tell which you mean. The fix is <strong>aliasing</strong> — name the tables <code class="docutils literal notranslate"><span class="pre">.alias(&quot;left&quot;)</span></code> and <code class="docutils literal notranslate"><span class="pre">.alias(&quot;right&quot;)</span></code>, join on the predicate, then drop the duplicate by its home table (<code class="docutils literal notranslate"><span class="pre">F.col(&quot;right.log_service_id&quot;)</span></code>). There’s no <code class="docutils literal notranslate"><span class="pre">keep_first</span></code> like pandas; you drop explicitly.</p></li>
+</ul>
+<p>Chained, a multi-join reads cleanly: join <code class="docutils literal notranslate"><span class="pre">logs</span></code> to <code class="docutils literal notranslate"><span class="pre">log_identifier</span></code>, then <strong>left-join</strong> <code class="docutils literal notranslate"><span class="pre">cd_category</span></code> on <code class="docutils literal notranslate"><span class="pre">category_id</span></code>, then left-join <code class="docutils literal notranslate"><span class="pre">cd_program_class</span></code> on <code class="docutils literal notranslate"><span class="pre">program_id</span></code>, growing to 37 columns.</p>
+</section>
+<section id="the-monstrous-query">
+<h2>2.5 The “monstrous” query<a class="headerlink" href="#the-monstrous-query" title="Link to this heading">#</a></h2>
+<p>With <code class="docutils literal notranslate"><span class="pre">full_log</span></code> assembled (four tables, ~339k × 37), we answer: <em>which programs are mostly commercials?</em> Group by two columns (<code class="docutils literal notranslate"><span class="pre">program_class</span></code> and its description) and <strong><code class="docutils literal notranslate"><span class="pre">agg</span></code></strong> to sum <code class="docutils literal notranslate"><span class="pre">duration_seconds</span></code> (aliased <code class="docutils literal notranslate"><span class="pre">duration_total</span></code>), sorting high to low; <code class="docutils literal notranslate"><span class="pre">agg</span></code> can do many aggregations at once (min/max/mean/sum/count — anything a pivot table does). Then per <code class="docutils literal notranslate"><span class="pre">log_identifier</span></code>, sum the duration <strong>only where</strong> the program class is one of eight commercial codes (<code class="docutils literal notranslate"><span class="pre">F.when(...).otherwise(0)</span></code>) as <code class="docutils literal notranslate"><span class="pre">duration_commercial</span></code>, and compute a <strong><code class="docutils literal notranslate"><span class="pre">commercial_ratio</span></code></strong> = commercial ÷ total with <code class="docutils literal notranslate"><span class="pre">withColumn</span></code>. Order high to low and you find programs that are <em>all</em> commercials. Two null totals appear — either <strong><code class="docutils literal notranslate"><span class="pre">dropna()</span></code></strong> them (446 → 444 rows) or <strong><code class="docutils literal notranslate"><span class="pre">fillna(999)</span></code></strong> to make them obvious. Finally, <strong><code class="docutils literal notranslate"><span class="pre">.toPandas()</span></code></strong> converts the small summary table to a pandas DataFrame you can plot with Matplotlib — the canonical PySpark workflow: crunch big data into a summary, then visualize elsewhere.</p>
+</section>
+<section id="registering-views-and-sql-union-vs-join">
+<h2>2.6 Registering views and SQL: UNION vs JOIN<a class="headerlink" href="#registering-views-and-sql-union-vs-join" title="Link to this heading">#</a></h2>
+<p>SQL and PySpark variables live in <strong>separate namespaces</strong> — to query a DataFrame with SQL you must first register it via the <strong>Spark catalog</strong> (<code class="docutils literal notranslate"><span class="pre">createOrReplaceTempView</span></code>). You can even create a view <em>inside</em> a SQL string (<code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">OR</span> <span class="pre">REPLACE</span> <span class="pre">TEMP</span> <span class="pre">VIEW</span> <span class="pre">drive_days</span> <span class="pre">AS</span> <span class="pre">SELECT</span> <span class="pre">model,</span> <span class="pre">COUNT(*)</span> <span class="pre">...</span> <span class="pre">GROUP</span> <span class="pre">BY</span> <span class="pre">model</span></code>), storing the <strong>instructions</strong>, not the data. <strong>UNION</strong> appends rows (concatenate), while <strong>JOIN</strong> extends columns — two different axes. A join in SQL (<code class="docutils literal notranslate"><span class="pre">SELECT</span> <span class="pre">...</span> <span class="pre">FROM</span> <span class="pre">drive_days</span> <span class="pre">JOIN</span> <span class="pre">failures</span> <span class="pre">ON</span> <span class="pre">drive_days.model</span> <span class="pre">=</span> <span class="pre">failures.model</span></code>) is more verbose than the PySpark equivalent (<code class="docutils literal notranslate"><span class="pre">drive_days.join(failures,</span> <span class="pre">&quot;model&quot;,</span> <span class="pre">&quot;left&quot;)</span></code>) — “pick your poison,” though PySpark often reads cleaner here.</p>
+</section>
+<section id="the-backblaze-dataset">
+<h2>2.7 The Backblaze dataset<a class="headerlink" href="#the-backblaze-dataset" title="Link to this heading">#</a></h2>
+<p>The <strong>Backblaze</strong> hard-drive-failure data is large and split across many files. Use <strong><code class="docutils literal notranslate"><span class="pre">wget</span></code></strong> to grab four ~500 MB quarterly zips, <strong><code class="docutils literal notranslate"><span class="pre">unzip</span> <span class="pre">-d</span></code></strong> each into its own folder (naming them uniformly <code class="docutils literal notranslate"><span class="pre">Q1</span></code>–<code class="docutils literal notranslate"><span class="pre">Q4</span></code>), delete the junk Mac subdirectory and the zips to reclaim space. Each quarter unzips to ~3 GB (~92 daily CSVs), ~12 GB total, ~40 million rows. Read all files in a folder at once (no glob, no loop), and handle the real-world snag that <strong>Q4 has two extra columns</strong> by adding literal <code class="docutils literal notranslate"><span class="pre">None</span></code> string columns to the others so a <strong><code class="docutils literal notranslate"><span class="pre">union</span></code></strong> aligns. Cast <code class="docutils literal notranslate"><span class="pre">smart*</span></code> columns to numeric, and register the result as a view for SQL.</p>
+</section>
+<section id="pyspark-vs-sql-and-blending-them">
+<h2>2.8 PySpark vs. SQL, and blending them<a class="headerlink" href="#pyspark-vs-sql-and-blending-them" title="Link to this heading">#</a></h2>
+<p>Side by side on essential EDA — <strong>select/where</strong>, <strong>group by/order by</strong>, and <strong>having</strong> (filter <em>after</em> grouping) — the two languages differ mainly in <strong>order of operations</strong>: PySpark chains <em>source → transform → action</em>, while SQL front-loads the <code class="docutils literal notranslate"><span class="pre">SELECT</span></code>. SQL niceties: reference columns by <strong>index</strong> in <code class="docutils literal notranslate"><span class="pre">GROUP</span> <span class="pre">BY</span></code>/<code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code>, and name computed columns with a bare space (<code class="docutils literal notranslate"><span class="pre">...</span> <span class="pre">AS</span> <span class="pre">max_gb</span></code>). <code class="docutils literal notranslate"><span class="pre">HAVING</span></code> cleans up post-aggregation issues (e.g. drives reporting more than one capacity, or a negative capacity).</p>
+<p>Best of both: three DataFrame methods accept SQL snippets — <strong><code class="docutils literal notranslate"><span class="pre">selectExpr</span></code></strong>, <strong><code class="docutils literal notranslate"><span class="pre">expr</span></code></strong>, and <strong><code class="docutils literal notranslate"><span class="pre">where</span></code>/<code class="docutils literal notranslate"><span class="pre">filter</span></code></strong>. A reliability function reads all files with <strong><code class="docutils literal notranslate"><span class="pre">functools.reduce</span></code></strong> to keep only the <strong>common columns</strong> (four clean lines, no manual <code class="docutils literal notranslate"><span class="pre">None</span></code> padding), computes <strong>drive_days</strong> and <strong>failures</strong> as grouped DataFrames, joins them (<code class="docutils literal notranslate"><span class="pre">fillna(0)</span></code>), derives a <strong><code class="docutils literal notranslate"><span class="pre">failure_rate</span></code></strong> column, and uses a <code class="docutils literal notranslate"><span class="pre">where(&quot;capacity</span> <span class="pre">BETWEEN</span> <span class="pre">...</span> <span class="pre">AND</span> <span class="pre">...&quot;)</span></code> SQL clause with string substitution and a ±25% tolerance to return the top-3 most reliable drives for a given capacity. The takeaway: lean on <strong><code class="docutils literal notranslate"><span class="pre">where(...)</span></code></strong> SQL for readable range filters, and PySpark for clean joins — mix freely.</p>
+<div class="seealso dropdown admonition">
+<p class="admonition-title">🔗 Notebooks for this chapter</p>
+<ul class="simple">
+<li><p><strong>Ch4 — reading CSVs, describe, columns</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module2_ETL_PySpark/M2_2_PySpark_EDA_on_spreadsheets/Ch4.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module2_ETL_PySpark/M2_2_PySpark_EDA_on_spreadsheets/Ch4.ipynb">GitHub</a></p></li>
+<li><p><strong>Ch5 — joins &amp; the monstrous query</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module2_ETL_PySpark/M2_2_PySpark_EDA_on_spreadsheets/Ch5.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module2_ETL_PySpark/M2_2_PySpark_EDA_on_spreadsheets/Ch5.ipynb">GitHub</a></p></li>
+<li><p><strong>Structured-data EDA in Colab</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module2_ETL_PySpark/M2_2_PySpark_EDA_on_spreadsheets/Colab_and_PySpark%20-%20Structured%20Data.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module2_ETL_PySpark/M2_2_PySpark_EDA_on_spreadsheets/Colab_and_PySpark%20-%20Structured%20Data.ipynb">GitHub</a></p></li>
+<li><p><strong>Ch7 pt1 — views, UNION &amp; JOIN</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_JSON_and_SQL/Module3_2_SQL/Ch7_pt1.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_JSON_and_SQL/Module3_2_SQL/Ch7_pt1.ipynb">GitHub</a></p></li>
+<li><p><strong>Ch7 pt2 — the Backblaze data</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_JSON_and_SQL/Module3_2_SQL/Ch7_pt2.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_JSON_and_SQL/Module3_2_SQL/Ch7_pt2.ipynb">GitHub</a></p></li>
+<li><p><strong>Ch7 pt3 — blending PySpark &amp; SQL</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_JSON_and_SQL/Module3_2_SQL/Ch7_pt3.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_JSON_and_SQL/Module3_2_SQL/Ch7_pt3.ipynb">GitHub</a></p></li>
+</ul>
+<p><em>Class exercises &amp; projects:</em></p>
+<ul class="simple">
+<li><p><strong>Class exercise — structured data</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module2_ETL_PySpark/M2_2_PySpark_EDA_on_spreadsheets/ClassExercise_StructuredData_PySpark.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module2_ETL_PySpark/M2_2_PySpark_EDA_on_spreadsheets/ClassExercise_StructuredData_PySpark.ipynb">GitHub</a></p></li>
+<li><p><strong>Class exercise — SQL</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_JSON_and_SQL/Module3_2_SQL/ClassExercise_SQL.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_JSON_and_SQL/Module3_2_SQL/ClassExercise_SQL.ipynb">GitHub</a></p></li>
+<li><p><strong>Project 1 — EDA with PySpark (blank)</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module2_ETL_PySpark/Project1_EDA_PySpark/Project1_blank.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module2_ETL_PySpark/Project1_EDA_PySpark/Project1_blank.ipynb">GitHub</a></p></li>
+<li><p><strong>Project 1 — answer key</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module2_ETL_PySpark/Project1_EDA_PySpark/Project1_answers.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module2_ETL_PySpark/Project1_EDA_PySpark/Project1_answers.ipynb">GitHub</a></p></li>
+<li><p><strong>Primer — practical Python basics</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module1_Basic_Linux_Commands/M1_2_EDA/1_Practical_Python_Programming_Basics.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module1_Basic_Linux_Commands/M1_2_EDA/1_Practical_Python_Programming_Basics.ipynb">GitHub</a></p></li>
+<li><p><strong>Primer — data types, tables &amp; wrangling</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module1_Basic_Linux_Commands/M1_2_EDA/2_DataTypes_Tables_Wrangling_and_Statistics.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module1_Basic_Linux_Commands/M1_2_EDA/2_DataTypes_Tables_Wrangling_and_Statistics.ipynb">GitHub</a></p></li>
+<li><p><strong>Primer — general EDA template</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module1_Basic_Linux_Commands/M1_2_EDA/0_General_EDA_Template.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module1_Basic_Linux_Commands/M1_2_EDA/0_General_EDA_Template.ipynb">GitHub</a></p></li>
+<li><p><strong>Primer — Boston EDA template</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module1_Basic_Linux_Commands/M1_2_EDA/1_Boston_General_EDA_Template.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module1_Basic_Linux_Commands/M1_2_EDA/1_Boston_General_EDA_Template.ipynb">GitHub</a></p></li>
+<li><p><strong>Primer — Markdown guide</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module1_Basic_Linux_Commands/M1_2_EDA/Markdown_Guide.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module1_Basic_Linux_Commands/M1_2_EDA/Markdown_Guide.ipynb">GitHub</a></p></li>
+</ul>
+</div>
+</section>
+<section id="lecture-key-points">
+<h2>📌 Lecture key points<a class="headerlink" href="#lecture-key-points" title="Link to this heading">#</a></h2>
+<p><em>Distilled takeaways from the video lectures behind this chapter — click each to expand.</em></p>
+<div class="note dropdown admonition">
+<p class="admonition-title">EDA on a CSV file (Pt. 1)</p>
+<ul class="simple">
+<li><p>Read a CSV by specifying the <strong>delimiter</strong> (comma/semicolon/<code class="docutils literal notranslate"><span class="pre">|</span></code>), <code class="docutils literal notranslate"><span class="pre">header</span></code>, <code class="docutils literal notranslate"><span class="pre">inferSchema</span></code>, and <code class="docutils literal notranslate"><span class="pre">timestampFormat</span></code>.</p></li>
+<li><p>Always check <strong>rows × columns</strong> (e.g. 238k × 30) so you can anticipate the shape after joins/filters.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">select</span></code> takes strings, a list with <code class="docutils literal notranslate"><span class="pre">*</span></code>, or <code class="docutils literal notranslate"><span class="pre">F.col(...)</span></code>; you must <code class="docutils literal notranslate"><span class="pre">.show()</span></code> or it’s only a deferred instruction.</p></li>
+<li><p>To <strong>drop</strong> a column you must <strong>overwrite</strong> the DataFrame (no <code class="docutils literal notranslate"><span class="pre">inplace</span></code>); verify the column count fell (30 → 28).</p></li>
+</ul>
+</div>
+<div class="note dropdown admonition">
+<p class="admonition-title">EDA on a CSV file (Pt. 2)</p>
+<ul class="simple">
+<li><p>Check a column’s type with <code class="docutils literal notranslate"><span class="pre">.dtypes</span></code> (a tuple of name + type); <code class="docutils literal notranslate"><span class="pre">duration</span></code> is a <strong>string</strong>, not a real time.</p></li>
+<li><p>Use <strong><code class="docutils literal notranslate"><span class="pre">substring</span></code></strong> + <code class="docutils literal notranslate"><span class="pre">cast(&quot;int&quot;)</span></code> + <code class="docutils literal notranslate"><span class="pre">.alias</span></code> to split “HH:MM:SS” into hours, minutes, seconds.</p></li>
+<li><p>Convert to one unit — <code class="docutils literal notranslate"><span class="pre">hours*3600</span> <span class="pre">+</span> <span class="pre">minutes*60</span> <span class="pre">+</span> <span class="pre">seconds</span></code> — and add it with <strong><code class="docutils literal notranslate"><span class="pre">withColumn</span></code></strong> (overwrite to persist).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">withColumnRenamed</span></code>, lowercasing names, and alphabetical reordering are only temporary until you overwrite the DataFrame.</p></li>
+</ul>
+</div>
+<div class="note dropdown admonition">
+<p class="admonition-title">EDA on a CSV file (Pt. 3)</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">describe()</span></code></strong> gives count/mean/stddev/min/max; string columns show only alphabetical min/max.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">summary()</span></code></strong> adds 25/50/75 percentiles and accepts custom ones (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;10%&quot;,&quot;90%&quot;</span></code>).</p></li>
+<li><p>Both are lazy — chain a trailing <code class="docutils literal notranslate"><span class="pre">.show()</span></code> to see output.</p></li>
+<li><p>Think of PySpark as a tool for <strong>intermediate reporting tables</strong>, then plot in pandas/Matplotlib/BI tools.</p></li>
+</ul>
+</div>
+<div class="note dropdown admonition">
+<p class="admonition-title">Joining .csv files on a common field</p>
+<ul class="simple">
+<li><p>A join = <strong>left</strong> table + <strong>right</strong> table + <strong>predicate</strong> (match condition) + <strong>how</strong> (method); <strong>inner</strong> is the default.</p></li>
+<li><p>Joining on a shared key can <strong>increase</strong> the row count when a key matches multiple rows (238k → 339k).</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">&amp;</span></code> (AND) and <code class="docutils literal notranslate"><span class="pre">|</span></code> (OR), each condition parenthesized, for <strong>multiple predicates</strong>.</p></li>
+<li><p>Join flavors: outer (may have nulls), left, <strong>union</strong> (row concatenation), and <strong>cross</strong> (the “nuclear” duplicating option).</p></li>
+</ul>
+</div>
+<div class="note dropdown admonition">
+<p class="admonition-title">Performing multiple joins with chaining</p>
+<ul class="simple">
+<li><p>When the key has <strong>different names</strong> on each side, the join duplicates the column and Spark can’t disambiguate it.</p></li>
+<li><p>Fix with <strong>aliasing</strong>: <code class="docutils literal notranslate"><span class="pre">.alias(&quot;left&quot;)</span></code>/<code class="docutils literal notranslate"><span class="pre">.alias(&quot;right&quot;)</span></code>, then drop by home table (<code class="docutils literal notranslate"><span class="pre">F.col(&quot;right.key&quot;)</span></code>) — no pandas <code class="docutils literal notranslate"><span class="pre">keep_first</span></code>.</p></li>
+<li><p>Chain several joins cleanly: inner-join the reference table, then <strong>left-join</strong> <code class="docutils literal notranslate"><span class="pre">cd_category</span></code> and <code class="docutils literal notranslate"><span class="pre">cd_program_class</span></code>.</p></li>
+<li><p>Each added table appends its columns (→ 37 columns), preserving rows with left joins.</p></li>
+</ul>
+</div>
+<div class="note dropdown admonition">
+<p class="admonition-title">A complex, monstrous query!</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">groupBy(...).agg(...)</span></code> can compute many aggregations at once (sum/min/max/mean/count) — like a pivot table.</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">F.when(class</span> <span class="pre">in</span> <span class="pre">commercial_codes,</span> <span class="pre">duration).otherwise(0)</span></code> to sum a <strong>conditional</strong> total, then <code class="docutils literal notranslate"><span class="pre">withColumn</span></code> a <strong>commercial_ratio</strong>.</p></li>
+<li><p>Handle null totals with <strong><code class="docutils literal notranslate"><span class="pre">dropna()</span></code></strong> or <strong><code class="docutils literal notranslate"><span class="pre">fillna(999)</span></code></strong> (fillna keeps the row count constant).</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">.toPandas()</span></code></strong> converts a small summary table for Matplotlib — the core workflow: crunch big → visualize small.</p></li>
+</ul>
+</div>
+<div class="note dropdown admonition">
+<p class="admonition-title">Assigning views with SQL, using UNION and JOIN</p>
+<ul class="simple">
+<li><p>Register intermediate output as a <strong>view</strong> in the Spark catalog — even inside a SQL <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">OR</span> <span class="pre">REPLACE</span> <span class="pre">TEMP</span> <span class="pre">VIEW</span> <span class="pre">...</span> <span class="pre">AS</span></code>.</p></li>
+<li><p>A view stores the <strong>instructions</strong>, not the data.</p></li>
+<li><p><strong>UNION</strong> appends rows; <strong>JOIN</strong> extends columns — two different axes.</p></li>
+<li><p>The PySpark join (<code class="docutils literal notranslate"><span class="pre">drive_days.join(failures,</span> <span class="pre">&quot;model&quot;,</span> <span class="pre">&quot;left&quot;)</span></code>) is usually cleaner than the SQL equivalent.</p></li>
+</ul>
+</div>
+<div class="note dropdown admonition">
+<p class="admonition-title">Comparing PySpark code and SQL queries</p>
+<ul class="simple">
+<li><p>SQL and PySpark differ mainly in <strong>order of operations</strong>: PySpark chains source→transform→action; SQL front-loads <code class="docutils literal notranslate"><span class="pre">SELECT</span></code>.</p></li>
+<li><p>Distributed output is <strong>unordered</strong> — add an explicit sort for reproducible results.</p></li>
+<li><p>To run SQL on a DataFrame you must <strong>register it</strong> as a view, or you’ll hit <code class="docutils literal notranslate"><span class="pre">AnalysisException:</span> <span class="pre">table</span> <span class="pre">not</span> <span class="pre">found</span></code>.</p></li>
+<li><p>Import the <code class="docutils literal notranslate"><span class="pre">AnalysisException</span></code> to catch import/query errors early.</p></li>
+</ul>
+</div>
+<div class="note dropdown admonition">
+<p class="admonition-title">Downloading and processing the Backblaze data</p>
+<ul class="simple">
+<li><p>Use <strong><code class="docutils literal notranslate"><span class="pre">wget</span></code></strong> to fetch four ~500 MB quarterly zips, <strong><code class="docutils literal notranslate"><span class="pre">unzip</span> <span class="pre">-d</span></code></strong> into per-quarter folders, then delete junk + zips.</p></li>
+<li><p>~12 GB total, ~40 million rows across ~92 daily CSVs per quarter — read a whole folder at once (no glob/loop).</p></li>
+<li><p>Real-world snag: <strong>Q4 has extra columns</strong> — add literal <code class="docutils literal notranslate"><span class="pre">None</span></code> string columns to the others so <strong><code class="docutils literal notranslate"><span class="pre">union</span></code></strong> aligns.</p></li>
+<li><p>Cast <code class="docutils literal notranslate"><span class="pre">smart*</span></code> columns to numeric and <strong>register</strong> the combined DataFrame as a view for SQL.</p></li>
+</ul>
+</div>
+<div class="note dropdown admonition">
+<p class="admonition-title">Using SQL-like syntax within dataframe methods</p>
+<ul class="simple">
+<li><p>Compare <strong>select/where</strong>, <strong>group by/order by</strong>, and <strong>having</strong> across SQL and PySpark on the failure-rate question.</p></li>
+<li><p>SQL lets you reference columns by <strong>index</strong> in <code class="docutils literal notranslate"><span class="pre">GROUP</span> <span class="pre">BY</span></code>/<code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span></code> and name computed columns with a bare space.</p></li>
+<li><p>Bytes → GB via <code class="docutils literal notranslate"><span class="pre">capacity</span> <span class="pre">/</span> <span class="pre">1024^3</span></code>; compute per-model <strong>min/max</strong> and order by the result.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">HAVING</span></code></strong> filters <em>after</em> grouping — useful for drives reporting multiple or negative capacities (data issues).</p></li>
+</ul>
+</div>
+<div class="note dropdown admonition">
+<p class="admonition-title">Blending PySpark and SQL code</p>
+<ul class="simple">
+<li><p>Read many files and keep only <strong>common columns</strong> with <code class="docutils literal notranslate"><span class="pre">functools.reduce</span></code> — four clean lines, no manual <code class="docutils literal notranslate"><span class="pre">None</span></code> padding.</p></li>
+<li><p>Three DataFrame methods accept SQL snippets: <strong><code class="docutils literal notranslate"><span class="pre">selectExpr</span></code></strong>, <strong><code class="docutils literal notranslate"><span class="pre">expr</span></code></strong>, and <strong><code class="docutils literal notranslate"><span class="pre">where</span></code>/<code class="docutils literal notranslate"><span class="pre">filter</span></code></strong>.</p></li>
+<li><p>Build <strong>drive_days</strong> and <strong>failures</strong> as grouped DataFrames, join with <code class="docutils literal notranslate"><span class="pre">fillna(0)</span></code>, and derive a <strong><code class="docutils literal notranslate"><span class="pre">failure_rate</span></code></strong> column.</p></li>
+<li><p>A <code class="docutils literal notranslate"><span class="pre">where(&quot;capacity</span> <span class="pre">BETWEEN</span> <span class="pre">...</span> <span class="pre">AND</span> <span class="pre">...&quot;)</span></code> clause (string substitution, ±25% tolerance) cleanly returns the top-N reliable drives.</p></li>
+</ul>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="module-1-spark-fundamentals.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Chapter 1 — Spark Fundamentals</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="module-3-complex-data-json.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Chapter 3 — Complex Data: JSON, Arrays, Maps &amp; Schemas</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reading-a-csv-and-first-looks">2.1 Reading a CSV and first looks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selecting-dropping-renaming-engineering-columns">2.2 Selecting, dropping, renaming, engineering columns</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#describing-data">2.3 Describing data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#joining-dataframes">2.4 Joining DataFrames</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-monstrous-query">2.5 The “monstrous” query</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#registering-views-and-sql-union-vs-join">2.6 Registering views and SQL: UNION vs JOIN</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-backblaze-dataset">2.7 The Backblaze dataset</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pyspark-vs-sql-and-blending-them">2.8 PySpark vs. SQL, and blending them</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lecture-key-points">📌 Lecture key points</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Dr. Dave Wanik · University of Connecticut (OPIM 5502)
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

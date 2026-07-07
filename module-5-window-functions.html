@@ -1,0 +1,549 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Chapter 5 — Window Functions &#8212; Big Data with PySpark</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=b8b12719"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'module-5-window-functions';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Chapter 6 — Machine Learning with Spark MLlib" href="module-6-machine-learning.html" />
+    <link rel="prev" title="Chapter 4 — RDDs &amp; UDFs" href="module-4-rdds-and-udfs.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+<aside class="bd-header-announcement" aria-label="Announcement">
+  <div class="bd-header-announcement__content">⚡ <strong>OPIM 5502 · Big Data with PySpark</strong> — draft course companion (work in progress)</div>
+</aside>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Big Data with PySpark</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="module-1-spark-fundamentals.html">Chapter 1 — Spark Fundamentals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module-2-dataframes-joins-sql.html">Chapter 2 — DataFrames: EDA, Joins &amp; SQL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module-3-complex-data-json.html">Chapter 3 — Complex Data: JSON, Arrays, Maps &amp; Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module-4-rdds-and-udfs.html">Chapter 4 — RDDs &amp; UDFs</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Chapter 5 — Window Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module-6-machine-learning.html">Chapter 6 — Machine Learning with Spark MLlib</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/module-5-window-functions.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Chapter 5 — Window Functions</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#why-windows-the-coldest-day-problem">5.1 Why windows: the coldest-day problem</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#analytical-functions-lag-lead-and-cume-dist-vs-percent-rank">5.2 Analytical functions: lag/lead and cume_dist vs. percent_rank</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#static-growing-and-unbounded-windows-rows-vs-ranges">5.3 Static, growing, and unbounded windows (rows vs. ranges)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summarizing-and-ranking">5.4 Summarizing and ranking</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#udfs-over-windows-and-summary">5.5 UDFs over windows, and summary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lecture-key-points">📌 Lecture key points</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="chapter-5-window-functions">
+<h1>Chapter 5 — Window Functions<a class="headerlink" href="#chapter-5-window-functions" title="Link to this heading">#</a></h1>
+<p><strong>Window functions</strong> compute a value over a <em>portion</em> of a DataFrame — a <strong>window frame</strong> — without collapsing rows the way a <code class="docutils literal notranslate"><span class="pre">groupBy</span></code> does. They’re the precursor to <strong>time-series feature engineering</strong> at scale: rolling averages, rankings, lags, and running summaries over massive data. This chapter covers the window spec (<code class="docutils literal notranslate"><span class="pre">partitionBy</span></code> / <code class="docutils literal notranslate"><span class="pre">orderBy</span></code>), the analytical functions (<code class="docutils literal notranslate"><span class="pre">lag</span></code>, <code class="docutils literal notranslate"><span class="pre">lead</span></code>, <code class="docutils literal notranslate"><span class="pre">cume_dist</span></code>, <code class="docutils literal notranslate"><span class="pre">percent_rank</span></code>), the three window shapes (<strong>static, growing, unbounded</strong>) by <strong>rows vs. ranges</strong>, the ranking functions, and finally <strong>UDFs over windows</strong>. We use the <strong>GSOD</strong> weather data (12M rows) plus a tiny 10-row <code class="docutils literal notranslate"><span class="pre">gsod_light</span></code> for hand-checking.</p>
+<p><em>(Install note: Spark’s hosted tarball kept moving and breaking Java setup, so from here on just use <strong><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">pyspark</span></code></strong> — it wires everything up behind the scenes, no paths or environment variables.)</em></p>
+<section id="why-windows-the-coldest-day-problem">
+<h2>5.1 Why windows: the coldest-day problem<a class="headerlink" href="#why-windows-the-coldest-day-problem" title="Link to this heading">#</a></h2>
+<p>Suppose you want the coldest day of the year <em>with</em> its month, day, station, and temperature. The <strong>long way</strong>: <code class="docutils literal notranslate"><span class="pre">groupBy(&quot;year&quot;).agg(F.min(&quot;temp&quot;))</span></code> gives the minimum but <strong>loses the other columns</strong>, so you’d join that back to the 12M rows — a <strong>self-join</strong> (left semi-join) on year + temperature, then order and select. It works, but it’s clunky and slow. As the book’s mantra goes: <em>get it to work, get it clean, get it fast.</em></p>
+<p>The <strong>window</strong> way skips the join. Build a <strong>window spec</strong> — <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">pyspark.sql.window</span> <span class="pre">import</span> <span class="pre">Window</span></code>, then <code class="docutils literal notranslate"><span class="pre">w</span> <span class="pre">=</span> <span class="pre">Window.partitionBy(&quot;year&quot;)</span></code> — which tells Spark how to split rows across nodes. Compute <code class="docutils literal notranslate"><span class="pre">F.min(&quot;temp&quot;).over(w)</span></code>, which <strong>broadcasts</strong> each year’s minimum onto every one of its ~4M rows, then filter where <code class="docutils literal notranslate"><span class="pre">temp</span> <span class="pre">==</span> <span class="pre">min_temp</span></code> and select your columns. No join, cleaner, faster. A window can partition on <strong>more than one column</strong> too (<code class="docutils literal notranslate"><span class="pre">partitionBy(&quot;year&quot;,</span> <span class="pre">&quot;month&quot;)</span></code> → the min per year-month, 36 rows). Think of a window function as <strong>a method applied to a column over a partition</strong>.</p>
+</section>
+<section id="analytical-functions-lag-lead-and-cume-dist-vs-percent-rank">
+<h2>5.2 Analytical functions: lag/lead and cume_dist vs. percent_rank<a class="headerlink" href="#analytical-functions-lag-lead-and-cume-dist-vs-percent-rank" title="Link to this heading">#</a></h2>
+<p><strong><code class="docutils literal notranslate"><span class="pre">lag</span></code></strong> and <strong><code class="docutils literal notranslate"><span class="pre">lead</span></code></strong> shift a column up or down within the window — invaluable for <strong>feature engineering without data leakage</strong>. If you’re predicting the next five days’ temperature, including <em>today’s</em> value leaks the future; <code class="docutils literal notranslate"><span class="pre">lag</span></code> lets you reference only <strong>past</strong> observations safely. Always <code class="docutils literal notranslate"><span class="pre">orderBy</span></code> inside the window (else distributed data is out of order), and the partition prevents leaking across years/stations. Leading/lagging rows produce <strong>nulls</strong> at the boundary (you can supply a default like 0 or 999).</p>
+<p>Two normalized-rank functions, easy to confuse:</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">cume_dist</span></code></strong> (cumulative distribution) = (records with value <strong>≤</strong> current) / (records in window). Intuitive; good for reaching the <strong>maximum</strong>.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">percent_rank</span></code></strong> = (records with value <strong>strictly &lt;</strong> current) / (records in window <strong>− 1</strong>). Note the <code class="docutils literal notranslate"><span class="pre">−</span> <span class="pre">1</span></code> in the denominator; good for reaching <strong>0/min</strong>. For four ascending values it gives 0, 0.33, 0.66, 1.</p></li>
+</ul>
+</section>
+<section id="static-growing-and-unbounded-windows-rows-vs-ranges">
+<h2>5.3 Static, growing, and unbounded windows (rows vs. ranges)<a class="headerlink" href="#static-growing-and-unbounded-windows-rows-vs-ranges" title="Link to this heading">#</a></h2>
+<p>The key differentiator is <strong>ordering</strong>. An <strong>unordered</strong> window (just <code class="docutils literal notranslate"><span class="pre">partitionBy</span></code>) applies a <strong>constant</strong> aggregate to every row in the partition — implicitly <code class="docutils literal notranslate"><span class="pre">rowsBetween(unboundedPreceding,</span> <span class="pre">unboundedFollowing)</span></code> (the whole partition). Add an <strong><code class="docutils literal notranslate"><span class="pre">orderBy</span></code></strong> and you get a <strong>growing</strong> window — <code class="docutils literal notranslate"><span class="pre">rangeBetween(unboundedPreceding,</span> <span class="pre">currentRow)</span></code> — so a running average grows row by row (e.g. the “not ordered” average is constant, while the ordered one climbs). You can be explicit with <strong><code class="docutils literal notranslate"><span class="pre">rowsBetween</span></code></strong> / <strong><code class="docutils literal notranslate"><span class="pre">rangeBetween</span></code></strong> using <code class="docutils literal notranslate"><span class="pre">Window.unboundedPreceding</span></code>, <code class="docutils literal notranslate"><span class="pre">Window.currentRow</span></code>, <code class="docutils literal notranslate"><span class="pre">Window.unboundedFollowing</span></code>.</p>
+<p><strong>Rows vs. ranges</strong> = <em>where you are</em> vs. <em>what you are</em>. <strong>Row</strong> windows tie the frame to row <strong>positions</strong> (good when there’s no time). <strong>Range</strong> windows tie it to the <strong>value</strong> of the current row — ideal for <strong>dates/times</strong>. For a <strong>60-day sliding average</strong>, build a Unix timestamp (seconds since 1970-01-01), <code class="docutils literal notranslate"><span class="pre">orderBy</span></code> it, and use <code class="docutils literal notranslate"><span class="pre">rangeBetween(-60_days_in_seconds,</span> <span class="pre">+60_days_in_seconds)</span></code> (~2.5M seconds ≈ a month), so each record averages the observations within ±one month — regardless of whether a month has 28/29/30/31 days.</p>
+</section>
+<section id="summarizing-and-ranking">
+<h2>5.4 Summarizing and ranking<a class="headerlink" href="#summarizing-and-ranking" title="Link to this heading">#</a></h2>
+<p>Beyond aggregates, windows <strong>rank</strong> rows. The ranking functions:</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">rank</span></code></strong> — “Olympic” ranking: ties share a rank, then it <strong>skips</strong> (1, 1, 3).</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">dense_rank</span></code></strong> — no gaps after ties (1, 1, 2).</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">percent_rank</span></code></strong> — normalized rank (0 = min, 1 = max), with the <code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">−</span> <span class="pre">1</span></code> denominator.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">ntile(n)</span></code></strong> — splits into n buckets (2-tile halves, 4-tile quartiles, 10-tile deciles, 100-tile percentiles); with tiny data, boundary overlaps land in the earlier bucket, so it can look lopsided.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">row_number</span></code></strong> — a strict increasing position, ties broken arbitrarily (less robust than <code class="docutils literal notranslate"><span class="pre">rank</span></code>).</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">orderBy</span></code> defaults to <strong>ascending</strong>; for “top hottest” queries chain <strong><code class="docutils literal notranslate"><span class="pre">.desc()</span></code></strong> on the order column. As always, <code class="docutils literal notranslate"><span class="pre">partitionBy</span></code> sets the group (e.g. per month or per year) and <code class="docutils literal notranslate"><span class="pre">orderBy</span></code> sets the ranking column.</p>
+</section>
+<section id="udfs-over-windows-and-summary">
+<h2>5.5 UDFs over windows, and summary<a class="headerlink" href="#udfs-over-windows-and-summary" title="Link to this heading">#</a></h2>
+<p>You can apply a <strong>UDF over a window</strong> — a <strong>series-to-scalar</strong> pandas UDF that runs once per record and returns a scalar. (Note: unbounded-window UDFs need Spark ≥ 2.4, bounded-window UDFs need Spark ≥ 3.0 — we’re on 3.3, so both are fine.) Declare it with the decorator (e.g. a <code class="docutils literal notranslate"><span class="pre">median</span></code> function taking a <code class="docutils literal notranslate"><span class="pre">pd.Series</span></code> → float), then apply inline with <strong><code class="docutils literal notranslate"><span class="pre">.over(Window.partitionBy(&quot;year&quot;))</span></code></strong> — unordered gives a constant median per year, while adding <code class="docutils literal notranslate"><span class="pre">orderBy(&quot;month&quot;,</span> <span class="pre">&quot;day&quot;)</span></code> makes it a <strong>growing</strong> median. This sets up the feature-engineering work ahead.</p>
+<p><strong>Summary:</strong> a window function runs over a <strong>window frame</strong> defined by a <strong>window spec</strong> — <code class="docutils literal notranslate"><span class="pre">partitionBy</span></code> (how to split), <code class="docutils literal notranslate"><span class="pre">orderBy</span></code> (how to order), and optionally <code class="docutils literal notranslate"><span class="pre">rowsBetween</span></code>/<code class="docutils literal notranslate"><span class="pre">rangeBetween</span></code> (how to bound). By default an <strong>unordered</strong> frame is <strong>unbounded</strong> (constant aggregate); an <strong>ordered</strong> frame <strong>grows</strong> left-to-right (first row → current row). Bounds can be by <strong>row</strong> (positional) or <strong>range</strong> (value-based, ideal for time). Windows, UDFs, blended PySpark/SQL, and JSON all come together in the course project.</p>
+<div class="seealso dropdown admonition">
+<p class="admonition-title">🔗 Notebooks for this chapter</p>
+<ul class="simple">
+<li><p><strong>Ch10 — window functions</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_RDDs_UDFs/M4_2_WindowFunctions/Ch10.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_RDDs_UDFs/M4_2_WindowFunctions/Ch10.ipynb">GitHub</a></p></li>
+</ul>
+<p><em>Class exercises &amp; projects:</em></p>
+<ul class="simple">
+<li><p><strong>Class exercise — window functions</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_RDDs_UDFs/M4_2_WindowFunctions/ClassExercise_WindowFunctions.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module3_RDDs_UDFs/M4_2_WindowFunctions/ClassExercise_WindowFunctions.ipynb">GitHub</a></p></li>
+</ul>
+</div>
+</section>
+<section id="lecture-key-points">
+<h2>📌 Lecture key points<a class="headerlink" href="#lecture-key-points" title="Link to this heading">#</a></h2>
+<p><em>Distilled takeaways from the video lectures behind this chapter — click each to expand.</em></p>
+<div class="note dropdown admonition">
+<p class="admonition-title">Introduction to Window Functions</p>
+<ul class="simple">
+<li><p>Window functions compute over a <strong>partition</strong> without collapsing rows — the precursor to time-series feature engineering.</p></li>
+<li><p>The “coldest day with details” problem needs a clunky <strong>self-join</strong> the long way; a <strong>window</strong> avoids it.</p></li>
+<li><p>Build a spec with <code class="docutils literal notranslate"><span class="pre">Window.partitionBy(...)</span></code>, compute <code class="docutils literal notranslate"><span class="pre">F.min(&quot;temp&quot;).over(w)</span></code> (broadcast per partition), then filter.</p></li>
+<li><p>Partition on <strong>multiple columns</strong> for per-year-month results; from here, install Spark with <strong><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">pyspark</span></code></strong>.</p></li>
+</ul>
+</div>
+<div class="note dropdown admonition">
+<p class="admonition-title">Analytical functions (lag, lead, cume_dist vs. percent_rank)</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">lag</span></code>/<code class="docutils literal notranslate"><span class="pre">lead</span></code></strong> shift a column within the window — key for feature engineering <strong>without data leakage</strong> (no future info).</p></li>
+<li><p>Always <code class="docutils literal notranslate"><span class="pre">orderBy</span></code> inside the window; boundary rows produce <strong>nulls</strong> (or a supplied default).</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">cume_dist</span></code></strong> = records <strong>≤</strong> current / records in window (intuitive; reaches the max).</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">percent_rank</span></code></strong> = records <strong>&lt;</strong> current / (records <strong>− 1</strong>) (reaches 0/min); e.g. 0, 0.33, 0.66, 1.</p></li>
+</ul>
+</div>
+<div class="note dropdown admonition">
+<p class="admonition-title">Static, growing, unbounded windows</p>
+<ul class="simple">
+<li><p><strong>Ordering</strong> is the switch: unordered → <strong>constant</strong> aggregate (whole partition); ordered → <strong>growing</strong> window (first → current row).</p></li>
+<li><p>Be explicit with <strong><code class="docutils literal notranslate"><span class="pre">rowsBetween</span></code>/<code class="docutils literal notranslate"><span class="pre">rangeBetween</span></code></strong> and <code class="docutils literal notranslate"><span class="pre">unboundedPreceding</span></code>/<code class="docutils literal notranslate"><span class="pre">currentRow</span></code>/<code class="docutils literal notranslate"><span class="pre">unboundedFollowing</span></code>.</p></li>
+<li><p><strong>Row</strong> windows are positional; <strong>range</strong> windows are value-based — use ranges for <strong>dates/times</strong>.</p></li>
+<li><p>A 60-day sliding average uses a <strong>Unix timestamp</strong> + <code class="docutils literal notranslate"><span class="pre">rangeBetween(±~2.5M</span> <span class="pre">seconds)</span></code>, robust to variable month lengths.</p></li>
+</ul>
+</div>
+<div class="note dropdown admonition">
+<p class="admonition-title">Summarizing, ranking, and analyzing window functions</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">rank</span></code></strong> skips after ties (1,1,3); <strong><code class="docutils literal notranslate"><span class="pre">dense_rank</span></code></strong> doesn’t (1,1,2).</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">percent_rank</span></code></strong> normalizes 0→1; <strong><code class="docutils literal notranslate"><span class="pre">ntile(n)</span></code></strong> buckets (quartiles, deciles, percentiles) — boundaries land in the earlier bucket on tiny data.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">row_number</span></code></strong> gives a strict position (ties broken arbitrarily; less robust than <code class="docutils literal notranslate"><span class="pre">rank</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">orderBy</span></code> is <strong>ascending</strong> by default — chain <strong><code class="docutils literal notranslate"><span class="pre">.desc()</span></code></strong> for top/extreme-value queries.</p></li>
+</ul>
+</div>
+<div class="note dropdown admonition">
+<p class="admonition-title">UDFs and Windows Chapter Summary</p>
+<ul class="simple">
+<li><p>Apply a <strong>series-to-scalar UDF over a window</strong> with <code class="docutils literal notranslate"><span class="pre">.over(Window.partitionBy(...))</span></code> — one scalar per record.</p></li>
+<li><p>Unbounded-window UDFs need Spark ≥ 2.4, bounded ≥ 3.0 (we’re on 3.3).</p></li>
+<li><p>Unordered → constant per partition; adding <code class="docutils literal notranslate"><span class="pre">orderBy</span></code> makes it a <strong>growing</strong> window.</p></li>
+<li><p>A window spec = <code class="docutils literal notranslate"><span class="pre">partitionBy</span></code> (split) + <code class="docutils literal notranslate"><span class="pre">orderBy</span></code> (order) + optional <code class="docutils literal notranslate"><span class="pre">rowsBetween</span></code>/<code class="docutils literal notranslate"><span class="pre">rangeBetween</span></code> (bound).</p></li>
+</ul>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="module-4-rdds-and-udfs.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Chapter 4 — RDDs &amp; UDFs</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="module-6-machine-learning.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Chapter 6 — Machine Learning with Spark MLlib</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#why-windows-the-coldest-day-problem">5.1 Why windows: the coldest-day problem</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#analytical-functions-lag-lead-and-cume-dist-vs-percent-rank">5.2 Analytical functions: lag/lead and cume_dist vs. percent_rank</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#static-growing-and-unbounded-windows-rows-vs-ranges">5.3 Static, growing, and unbounded windows (rows vs. ranges)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summarizing-and-ranking">5.4 Summarizing and ranking</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#udfs-over-windows-and-summary">5.5 UDFs over windows, and summary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lecture-key-points">📌 Lecture key points</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Dr. Dave Wanik · University of Connecticut (OPIM 5502)
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

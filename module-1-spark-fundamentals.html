@@ -1,0 +1,627 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Chapter 1 — Spark Fundamentals &#8212; Big Data with PySpark</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=b8b12719"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'module-1-spark-fundamentals';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Chapter 2 — DataFrames: EDA, Joins &amp; SQL" href="module-2-dataframes-joins-sql.html" />
+    <link rel="prev" title="Big Data with PySpark" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+<aside class="bd-header-announcement" aria-label="Announcement">
+  <div class="bd-header-announcement__content">⚡ <strong>OPIM 5502 · Big Data with PySpark</strong> — draft course companion (work in progress)</div>
+</aside>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Big Data with PySpark</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Chapter 1 — Spark Fundamentals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module-2-dataframes-joins-sql.html">Chapter 2 — DataFrames: EDA, Joins &amp; SQL</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module-3-complex-data-json.html">Chapter 3 — Complex Data: JSON, Arrays, Maps &amp; Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module-4-rdds-and-udfs.html">Chapter 4 — RDDs &amp; UDFs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module-5-window-functions.html">Chapter 5 — Window Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module-6-machine-learning.html">Chapter 6 — Machine Learning with Spark MLlib</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/module-1-spark-fundamentals.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Chapter 1 — Spark Fundamentals</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-command-line-linux-basics">1.1 The command line: Linux basics</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-spark-and-why-scale-out">1.2 What is Spark, and why scale out?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#distributed-processing-and-lazy-evaluation">1.3 Distributed processing and lazy evaluation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-first-pyspark-program">1.4 A first PySpark program</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#text-as-data-the-nlp-word-count-pipeline">1.5 Text as data: the NLP word-count pipeline</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#chaining-and-scaling-out">1.6 Chaining and scaling out</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#saving-results-the-coalesced-file">1.7 Saving results: the coalesced file</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#where-to-go-from-here-week-1">1.8 Where to go from here (Week 1)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lecture-key-points">📌 Lecture key points</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="chapter-1-spark-fundamentals">
+<h1>Chapter 1 — Spark Fundamentals<a class="headerlink" href="#chapter-1-spark-fundamentals" title="Link to this heading">#</a></h1>
+<p>This chapter gets you working in a <strong>distributed</strong> world. We start at the command line — the <strong>Linux</strong> commands you’ll use to organize files and folders — then meet <strong>Apache Spark</strong>: what it is, why “scaling out” beats “scaling up,” and how Spark spreads work across many machines using <strong>lazy evaluation</strong>. We put it into practice with <strong>PySpark</strong>, building a first DataFrame program and a complete <strong>NLP word-count pipeline</strong> that we then aim at a whole directory of books at once. The goal is comfort: type along, break things, and get a feel for the rhythm of big-data code.</p>
+<section id="the-command-line-linux-basics">
+<h2>1.1 The command line: Linux basics<a class="headerlink" href="#the-command-line-linux-basics" title="Link to this heading">#</a></h2>
+<p>Working with big data means giving up the point-and-click habit. You’ll organize files with a handful of <strong>Linux commands</strong>: <code class="docutils literal notranslate"><span class="pre">pwd</span></code> (print working directory), <code class="docutils literal notranslate"><span class="pre">mkdir</span></code> (make a directory), <code class="docutils literal notranslate"><span class="pre">cd</span></code> (change directory), <code class="docutils literal notranslate"><span class="pre">ls</span></code> (list files), <code class="docutils literal notranslate"><span class="pre">cp</span></code> (copy), <code class="docutils literal notranslate"><span class="pre">less</span></code> (preview a file), <code class="docutils literal notranslate"><span class="pre">rmdir</span></code> (remove an <em>empty</em> directory), and <code class="docutils literal notranslate"><span class="pre">rm</span> <span class="pre">-r</span></code> (remove a directory <em>with</em> contents — permanent, so be careful).</p>
+<p>In a Colab cell, prefix a shell command with <strong><code class="docutils literal notranslate"><span class="pre">%</span></code></strong> (a “magic”) so it runs in the <strong>same</strong> persistent session — <code class="docutils literal notranslate"><span class="pre">%cd</span></code> actually changes your directory for later cells. Using <strong><code class="docutils literal notranslate"><span class="pre">!</span></code></strong> instead spawns a fresh shell that forgets the change as soon as it finishes, so <code class="docutils literal notranslate"><span class="pre">!cd</span> <span class="pre">somewhere</span></code> followed by <code class="docutils literal notranslate"><span class="pre">!pwd</span></code> won’t show the move. Paths are <strong>relative to the working directory</strong>; <code class="docutils literal notranslate"><span class="pre">.</span></code> means “here,” and <code class="docutils literal notranslate"><span class="pre">..</span></code> means “up one folder.” A quick idiom: <code class="docutils literal notranslate"><span class="pre">mkdir</span> <span class="pre">class{1..9}</span></code> scaffolds nine class folders at once instead of right-clicking your way through. Copy with <code class="docutils literal notranslate"><span class="pre">cp</span> <span class="pre">source</span> <span class="pre">dest</span></code> (note the space), preview with <code class="docutils literal notranslate"><span class="pre">less</span> <span class="pre">file</span></code>, and remember spaces in names cause trouble — a shell reads a space as the start of a <strong>new argument</strong>, so use underscores.</p>
+</section>
+<section id="what-is-spark-and-why-scale-out">
+<h2>1.2 What is Spark, and why scale out?<a class="headerlink" href="#what-is-spark-and-why-scale-out" title="Link to this heading">#</a></h2>
+<p><strong>Apache Spark</strong> is a <em>unified analytics engine for large-scale data processing</em>. The core idea: when data is too big for one machine, it’s cheaper and more reliable to <strong>scale out</strong> (chain together many cheap machines) than to <strong>scale up</strong> (buy one enormous one). RAM is the limiting resource, and it gets disproportionately expensive at the top end — two 64 GB sticks cost less than one 128 GB stick. So instead of one heroic desktop, picture a <strong>cluster</strong> — “a hundred laptops crammed in a closet,” each a <strong>worker node</strong> holding a slice of the data.</p>
+<p>Spark is written in <strong>Scala</strong>, but <strong>PySpark</strong> gives you a Python interface — you never touch Scala. On Colab you install Spark in ~10 seconds (it fetches Java and the latest Spark tarball, sets some environment variables, and starts a session). The package you’ll live in is <strong><code class="docutils literal notranslate"><span class="pre">pyspark.sql</span></code></strong>; you always begin with <code class="docutils literal notranslate"><span class="pre">spark</span> <span class="pre">=</span> <span class="pre">SparkSession.builder...getOrCreate()</span></code>, giving each session a descriptive <strong>app name</strong> so multiple jobs stay organized. A useful mental model of the “Spark factory”: the <strong>master</strong> owns the resources, the <strong>driver</strong> requests them, the <strong>worker nodes</strong> are the benches (hardware), and the <strong>executors</strong> are the software on each bench that does the work and returns results.</p>
+</section>
+<section id="distributed-processing-and-lazy-evaluation">
+<h2>1.3 Distributed processing and lazy evaluation<a class="headerlink" href="#distributed-processing-and-lazy-evaluation" title="Link to this heading">#</a></h2>
+<p>How does Spark compute, say, an average across a huge file? The <strong>driver</strong> ships chunks to each worker, every worker <strong>sums and counts</strong> its own chunk, and Spark <strong>combines</strong> those partial results up the tree into one final answer — no single node ever holds all the data, so you avoid memory blowups. You don’t care about the intermediate sums; only the final output.</p>
+<p>The other big shift is <strong>lazy evaluation</strong>. Split your code into <strong>transformations</strong> (add a column, aggregate, compute summaries, train a model) and <strong>actions</strong> (I/O — <code class="docutils literal notranslate"><span class="pre">show</span></code>, <code class="docutils literal notranslate"><span class="pre">write</span></code>, <code class="docutils literal notranslate"><span class="pre">count</span></code>). Spark <strong>defers</strong> all transformations, building a <em>recipe</em> of instructions, and only executes when an <strong>action</strong> forces it. Don’t be fooled by the name — “lazy” is good. It means Spark stores cheap <strong>instructions</strong> instead of expensive <strong>intermediate copies</strong> (the way pandas would spawn <code class="docutils literal notranslate"><span class="pre">df2</span></code>, <code class="docutils literal notranslate"><span class="pre">df3</span></code>, … in memory), it can <strong>optimize</strong> the whole plan before running, and — because the plan is known — it can <strong>recover from node failure</strong> by re-sending a lost chunk to another worker. If pandas-style <strong>eager</strong> evaluation is your background, this feels strange at first; we’ll break operations out one at a time, then chain them.</p>
+</section>
+<section id="a-first-pyspark-program">
+<h2>1.4 A first PySpark program<a class="headerlink" href="#a-first-pyspark-program" title="Link to this heading">#</a></h2>
+<p>Alongside <code class="docutils literal notranslate"><span class="pre">SparkSession</span></code>, import the SQL functions as <strong><code class="docutils literal notranslate"><span class="pre">F</span></code></strong>: <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">pyspark.sql</span> <span class="pre">import</span> <span class="pre">functions</span> <span class="pre">as</span> <span class="pre">F</span></code>. This is a readability trick — every PySpark SQL call now visibly starts with <code class="docutils literal notranslate"><span class="pre">F.</span></code> (<code class="docutils literal notranslate"><span class="pre">F.split</span></code>, <code class="docutils literal notranslate"><span class="pre">F.explode</span></code>, <code class="docutils literal notranslate"><span class="pre">F.lower</span></code>, <code class="docutils literal notranslate"><span class="pre">F.col</span></code>, <code class="docutils literal notranslate"><span class="pre">F.regexp_replace</span></code>), so a reader instantly knows where a function comes from. A tiny end-to-end example reads a CSV with a header, uses <code class="docutils literal notranslate"><span class="pre">F.when(...)</span></code> to recode a column (values over a threshold → 10, else 0), filters rows, then <code class="docutils literal notranslate"><span class="pre">groupBy(...).count()</span></code> — all <strong>chained</strong>, producing no temporary tables. Even before you know the API, the code reads top-to-bottom like a sentence.</p>
+</section>
+<section id="text-as-data-the-nlp-word-count-pipeline">
+<h2>1.5 Text as data: the NLP word-count pipeline<a class="headerlink" href="#text-as-data-the-nlp-word-count-pipeline" title="Link to this heading">#</a></h2>
+<p>Text is <strong>unstructured</strong>, so the job is to reshape it into something spreadsheet-like a computer can count. Using <em>Pride and Prejudice</em> (a Project Gutenberg book), the pipeline is:</p>
+<ol class="arabic simple">
+<li><p><strong>Read</strong> the text file with the DataFrame reader → a DataFrame <code class="docutils literal notranslate"><span class="pre">book</span></code> with one string column named <code class="docutils literal notranslate"><span class="pre">value</span></code>. Inspect it with <code class="docutils literal notranslate"><span class="pre">printSchema()</span></code>, <code class="docutils literal notranslate"><span class="pre">.dtypes</span></code>, and <code class="docutils literal notranslate"><span class="pre">show(n,</span> <span class="pre">truncate=...)</span></code> (or <code class="docutils literal notranslate"><span class="pre">show(vertical=True)</span></code> to see records one at a time).</p></li>
+<li><p><strong>Tokenize</strong>: <code class="docutils literal notranslate"><span class="pre">F.split(F.col(&quot;value&quot;),</span> <span class="pre">&quot;</span> <span class="pre">&quot;)</span></code> breaks each line into a <strong>list</strong> of words. <strong>Alias</strong> the result (<code class="docutils literal notranslate"><span class="pre">.alias(&quot;line&quot;)</span></code>) — Spark auto-names outputs after the operation, which is correct but ugly, so rename for readability. Here we get ~13,000 rows (lines), each a list.</p></li>
+<li><p><strong>Explode</strong>: <code class="docutils literal notranslate"><span class="pre">F.explode(...)</span></code> turns each list into <strong>one row per word</strong> — ~127,000 words.</p></li>
+<li><p><strong>Clean</strong>: <code class="docutils literal notranslate"><span class="pre">F.lower(...)</span></code> lowercases, then <code class="docutils literal notranslate"><span class="pre">F.regexp_replace(word,</span> <span class="pre">&quot;[^a-zA-Z]&quot;,</span> <span class="pre">&quot;&quot;)</span></code> strips punctuation so <code class="docutils literal notranslate"><span class="pre">prejudice,</span></code> and <code class="docutils literal notranslate"><span class="pre">prejudice</span></code> are the same token.</p></li>
+<li><p><strong>Drop nulls</strong>: filter where <code class="docutils literal notranslate"><span class="pre">word</span> <span class="pre">!=</span> <span class="pre">&quot;&quot;</span></code> — this removes ~5,000 empty rows (the blank lines / paragraph breaks left by the space split), leaving ~122,000 words.</p></li>
+<li><p><strong>Count and sort</strong>: <code class="docutils literal notranslate"><span class="pre">groupBy(&quot;word&quot;).count()</span></code> then <code class="docutils literal notranslate"><span class="pre">orderBy(F.col(&quot;count&quot;).desc())</span></code> → the most frequent words (the usual <strong>stop words</strong>: <em>the, to, and, her</em> — the ones you’d drop for a real classification task).</p></li>
+</ol>
+<p>A key habit throughout: <strong>select the output</strong> after each function (or it’s lost), rename it, and keep an eye on the <strong>row/column counts</strong> so you never silently lose data.</p>
+</section>
+<section id="chaining-and-scaling-out">
+<h2>1.6 Chaining and scaling out<a class="headerlink" href="#chaining-and-scaling-out" title="Link to this heading">#</a></h2>
+<p>The step-by-step version above spawns six temporary DataFrames (<code class="docutils literal notranslate"><span class="pre">book</span></code>, <code class="docutils literal notranslate"><span class="pre">lines</span></code>, <code class="docutils literal notranslate"><span class="pre">words</span></code>, <code class="docutils literal notranslate"><span class="pre">words_lower</span></code>, …) — fine for learning, wasteful in production. The same logic <strong>chained</strong> into a single expression keeps just the instructions:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">spark</span><span class="o">.</span><span class="n">read</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="s2">&quot;books/*.txt&quot;</span><span class="p">)</span>
+   <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">),</span> <span class="s2">&quot; &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s2">&quot;line&quot;</span><span class="p">))</span>
+   <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">explode</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;line&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s2">&quot;word&quot;</span><span class="p">))</span>
+   <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;word&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s2">&quot;word&quot;</span><span class="p">))</span>
+   <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">regexp_replace</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;word&quot;</span><span class="p">),</span> <span class="s2">&quot;[^a-zA-Z]&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s2">&quot;word&quot;</span><span class="p">))</span>
+   <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;word&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+   <span class="o">.</span><span class="n">groupBy</span><span class="p">(</span><span class="s2">&quot;word&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+   <span class="o">.</span><span class="n">orderBy</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;count&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">desc</span><span class="p">()))</span>
+</pre></div>
+</div>
+<p>Now the magic: point the reader at a <strong>wildcard directory</strong> (<code class="docutils literal notranslate"><span class="pre">books/*.txt</span></code>) instead of one file, and the <em>same</em> program runs across <strong>all six books at once</strong> in a few seconds — no <code class="docutils literal notranslate"><span class="pre">for</span></code> loop, no manual file handling. Once your intent is expressed as instructions, Spark applies it at scale. This is the payoff of chained, lazy code: readable, and it grows from one file to a gigabyte without changing.</p>
+</section>
+<section id="saving-results-the-coalesced-file">
+<h2>1.7 Saving results: the coalesced file<a class="headerlink" href="#saving-results-the-coalesced-file" title="Link to this heading">#</a></h2>
+<p>Writing with the <strong>DataFrame writer</strong> (<code class="docutils literal notranslate"><span class="pre">results.write.csv(&quot;path&quot;)</span></code>, optionally <code class="docutils literal notranslate"><span class="pre">.mode(&quot;overwrite&quot;)</span></code>) doesn’t produce a single CSV — it produces a <strong>folder of parts</strong> (dozens of chunks), because the data lives across the distributed file system, and the parts aren’t globally ordered. That’s efficient for Spark but useless for a report or dashboard. To get one file, <strong><code class="docutils literal notranslate"><span class="pre">coalesce(1)</span></code></strong> before writing collapses the output into a <strong>single part</strong> — much easier to hand off, at the cost of funneling everything through one node.</p>
+</section>
+<section id="where-to-go-from-here-week-1">
+<h2>1.8 Where to go from here (Week 1)<a class="headerlink" href="#where-to-go-from-here-week-1" title="Link to this heading">#</a></h2>
+<p>Three bits of housekeeping to close the first week: (1) get the free course text — <em>Data Analysis with Python and PySpark</em> by <strong>Jonathan Rioux</strong> — via the UConn library, and keep up with the readings. (2) When building file structures, <strong>avoid spaces</strong> (note how Drive uses <code class="docutils literal notranslate"><span class="pre">My</span> <span class="pre">Drive</span></code> carefully) — use underscores. (3) <strong>Practice EDA in Python</strong> (selecting rows/columns, plots, tables): the <em>spirit</em> of EDA carries into PySpark, though you’ll be re-creating those pandas moves at scale — and remember pandas/Matplotlib/NumPy are <strong>eager</strong>, unlike Spark. A cool bridge worth knowing about later: <strong>Koalas</strong>, a pandas-like API on Spark.</p>
+<div class="seealso dropdown admonition">
+<p class="admonition-title">🔗 Notebooks for this chapter</p>
+<ul class="simple">
+<li><p><strong>Colab &amp; shell basics</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module1_Basic_Linux_Commands/M1_1_Welcome_to_PySpark/Overview_of_Colaboratory_Features.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module1_Basic_Linux_Commands/M1_1_Welcome_to_PySpark/Overview_of_Colaboratory_Features.ipynb">GitHub</a></p></li>
+<li><p><strong>Shell (Bash) commands</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module1_Basic_Linux_Commands/M1_1_Welcome_to_PySpark/Shell%20%28Bash%29%20commands.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module1_Basic_Linux_Commands/M1_1_Welcome_to_PySpark/Shell%20%28Bash%29%20commands.ipynb">GitHub</a></p></li>
+<li><p><strong>Ch1 — first PySpark program</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module1_Basic_Linux_Commands/M1_1_Welcome_to_PySpark/Ch1.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module1_Basic_Linux_Commands/M1_1_Welcome_to_PySpark/Ch1.ipynb">GitHub</a></p></li>
+<li><p><strong>Ch2 — NLP word-count pipeline</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module2_ETL_PySpark/M2_1_Intro_PySpark_with_Text_Data/Ch2.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module2_ETL_PySpark/M2_1_Intro_PySpark_with_Text_Data/Ch2.ipynb">GitHub</a></p></li>
+<li><p><strong>Ch3 — chaining &amp; coalesced output</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module2_ETL_PySpark/M2_1_Intro_PySpark_with_Text_Data/Ch3.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module2_ETL_PySpark/M2_1_Intro_PySpark_with_Text_Data/Ch3.ipynb">GitHub</a></p></li>
+</ul>
+<p><em>Class exercises &amp; projects:</em></p>
+<ul class="simple">
+<li><p><strong>Class exercise — NLP &amp; cloud computing</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module2_ETL_PySpark/M2_1_Intro_PySpark_with_Text_Data/ClassExercise_NLP_CloudComputing.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module2_ETL_PySpark/M2_1_Intro_PySpark_with_Text_Data/ClassExercise_NLP_CloudComputing.ipynb">GitHub</a></p></li>
+<li><p><strong>Extra — summarization with NLTK</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module2_ETL_PySpark/M2_1_Intro_PySpark_with_Text_Data/Summarization_NLTK.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module2_ETL_PySpark/M2_1_Intro_PySpark_with_Text_Data/Summarization_NLTK.ipynb">GitHub</a></p></li>
+<li><p><strong>Extra — fine-tuning summarization (HF)</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module2_ETL_PySpark/M2_1_Intro_PySpark_with_Text_Data/FineTuning_Summarization_huggingface_tf.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module2_ETL_PySpark/M2_1_Intro_PySpark_with_Text_Data/FineTuning_Summarization_huggingface_tf.ipynb">GitHub</a></p></li>
+<li><p><strong>Extra — another fine-tuning example</strong>   <a class="reference external" href="https://colab.research.google.com/github/drdave-teaching/OPIM5502-notebooks/blob/master/Module2_ETL_PySpark/M2_1_Intro_PySpark_with_Text_Data/AnotherExample_FineTuning.ipynb"><img alt="Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>   <a class="reference external" href="https://github.com/drdave-teaching/OPIM5502-notebooks/blob/master/Module2_ETL_PySpark/M2_1_Intro_PySpark_with_Text_Data/AnotherExample_FineTuning.ipynb">GitHub</a></p></li>
+</ul>
+</div>
+</section>
+<section id="lecture-key-points">
+<h2>📌 Lecture key points<a class="headerlink" href="#lecture-key-points" title="Link to this heading">#</a></h2>
+<p><em>Distilled takeaways from the video lectures behind this chapter — click each to expand.</em></p>
+<div class="note dropdown admonition">
+<p class="admonition-title">Linux Commands (Pt. 1)</p>
+<ul class="simple">
+<li><p>Distributed work means dropping point-and-click for the command line; core commands: <code class="docutils literal notranslate"><span class="pre">pwd</span></code>, <code class="docutils literal notranslate"><span class="pre">mkdir</span></code>, <code class="docutils literal notranslate"><span class="pre">cd</span></code>, <code class="docutils literal notranslate"><span class="pre">ls</span></code>, <code class="docutils literal notranslate"><span class="pre">rmdir</span></code>.</p></li>
+<li><p>In Colab, prefix with <strong><code class="docutils literal notranslate"><span class="pre">%</span></code></strong> to stay in the same session (<code class="docutils literal notranslate"><span class="pre">%cd</span></code> persists); <strong><code class="docutils literal notranslate"><span class="pre">!</span></code></strong> spawns a throwaway shell that forgets <code class="docutils literal notranslate"><span class="pre">cd</span></code>.</p></li>
+<li><p>Paths are relative to the working directory: <code class="docutils literal notranslate"><span class="pre">.</span></code> = here, <code class="docutils literal notranslate"><span class="pre">..</span></code> = up one folder; <code class="docutils literal notranslate"><span class="pre">mkdir</span> <span class="pre">class{1..9}</span></code> scaffolds folders fast.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rmdir</span></code> deletes only <strong>empty</strong> directories; verify with <code class="docutils literal notranslate"><span class="pre">pwd</span></code>/<code class="docutils literal notranslate"><span class="pre">ls</span></code> before destructive commands.</p></li>
+</ul>
+</div>
+<div class="note dropdown admonition">
+<p class="admonition-title">Linux Commands (Pt. 2)</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cp</span> <span class="pre">source</span> <span class="pre">dest</span></code> copies a file (mind the space between the two paths); the original stays put.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ls</span></code> lists a directory and <code class="docutils literal notranslate"><span class="pre">less</span> <span class="pre">file</span></code> previews it without opening the whole thing.</p></li>
+<li><p>Removing a <strong>non-empty</strong> directory needs <code class="docutils literal notranslate"><span class="pre">rm</span> <span class="pre">-r</span></code> — permanent, so be careful.</p></li>
+<li><p>On your own: mount Google Drive and build class folders with these commands.</p></li>
+</ul>
+</div>
+<div class="note dropdown admonition">
+<p class="admonition-title">What did Spark do</p>
+<ul class="simple">
+<li><p>Spark computes an average by having each worker <strong>sum + count</strong> its chunk, then <strong>combining</strong> partials up the tree — no node holds all the data, avoiding memory issues.</p></li>
+<li><p>Split code into <strong>transformations</strong> (add column, aggregate, train) and <strong>actions</strong> (<code class="docutils literal notranslate"><span class="pre">show</span></code>, <code class="docutils literal notranslate"><span class="pre">write</span></code>, <code class="docutils literal notranslate"><span class="pre">count</span></code> = I/O).</p></li>
+<li><p><strong>Lazy</strong> evaluation stores cheap instructions, not expensive intermediate copies; “lazy” is a good thing, not a flaw.</p></li>
+<li><p>Benefits: less memory, whole-plan optimization, and fault tolerance (re-send a lost chunk to another worker).</p></li>
+</ul>
+</div>
+<div class="note dropdown admonition">
+<p class="admonition-title">What is Spark</p>
+<ul class="simple">
+<li><p>Spark is a <strong>unified analytics engine for large-scale data</strong>; PySpark is its Python interface (Spark itself is Scala).</p></li>
+<li><p><strong>Scale out</strong> (many cheap machines) beats <strong>scale up</strong> (one huge machine) — RAM gets disproportionately expensive.</p></li>
+<li><p>On Colab, install Spark (~10s), then <code class="docutils literal notranslate"><span class="pre">spark</span> <span class="pre">=</span> <span class="pre">SparkSession.builder...</span></code> with a descriptive <strong>app name</strong>; live in <strong><code class="docutils literal notranslate"><span class="pre">pyspark.sql</span></code></strong>.</p></li>
+<li><p>Factory model: <strong>master</strong> owns resources, <strong>driver</strong> requests them, <strong>worker nodes</strong> are hardware, <strong>executors</strong> do the work.</p></li>
+<li><p>Import functions as <strong><code class="docutils literal notranslate"><span class="pre">F</span></code></strong> so every PySpark SQL call is self-documenting.</p></li>
+</ul>
+</div>
+<div class="note dropdown admonition">
+<p class="admonition-title">Chaining and scaling out</p>
+<ul class="simple">
+<li><p>The same logic written as <strong>chained</strong> operations replaces six temporary DataFrames with one readable expression.</p></li>
+<li><p><strong>Select the output</strong> after each function or the result is lost; any <code class="docutils literal notranslate"><span class="pre">F.</span></code>-prefixed call comes from PySpark SQL.</p></li>
+<li><p>Point the reader at a <strong>wildcard</strong> (<code class="docutils literal notranslate"><span class="pre">books/*.txt</span></code>) and the identical program runs across every file — no <code class="docutils literal notranslate"><span class="pre">for</span></code> loop.</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">ls</span></code>/<code class="docutils literal notranslate"><span class="pre">mv</span></code>/<code class="docutils literal notranslate"><span class="pre">wc</span></code> to organize the corpus (underscores, not spaces) before firing the job at the whole directory.</p></li>
+</ul>
+</div>
+<div class="note dropdown admonition">
+<p class="admonition-title">Grouping data and saving a coalesced file</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">groupBy(col).count()</span></code> aggregates; add <code class="docutils literal notranslate"><span class="pre">orderBy(...,</span> <span class="pre">ascending=False)</span></code> to sort high→low (distributed output is unordered otherwise).</p></li>
+<li><p>Writing with the <strong>DataFrame writer</strong> produces a <strong>folder of parts</strong>, not one CSV, and parts aren’t globally ordered.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">coalesce(1)</span></code></strong> before <code class="docutils literal notranslate"><span class="pre">write</span></code> collapses output into a single file for reports/dashboards.</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">.mode(&quot;overwrite&quot;)</span></code> to replace an existing path, or Spark errors that it already exists.</p></li>
+</ul>
+</div>
+<div class="note dropdown admonition">
+<p class="admonition-title">Intro to NLP with Spark (Pt. 1)</p>
+<ul class="simple">
+<li><p>Text is unstructured; the goal is to reshape it into countable, spreadsheet-like rows.</p></li>
+<li><p>Steps: <strong>tokenize → clean (lowercase, strip punctuation) → count → sort</strong> for most-frequent words.</p></li>
+<li><p>The DataFrame reader opens many formats (CSV, JSON, <strong>Parquet</strong>, text); <code class="docutils literal notranslate"><span class="pre">read.text</span></code> gives one string column <code class="docutils literal notranslate"><span class="pre">value</span></code>.</p></li>
+<li><p>Inspect with <code class="docutils literal notranslate"><span class="pre">printSchema()</span></code>, <code class="docutils literal notranslate"><span class="pre">.dtypes</span></code>, and <code class="docutils literal notranslate"><span class="pre">show(n,</span> <span class="pre">truncate=…,</span> <span class="pre">vertical=…)</span></code>.</p></li>
+<li><p>RDDs track individual rows; the newer <strong>DataFrame</strong> API focuses on column elements — we use DataFrames.</p></li>
+</ul>
+</div>
+<div class="note dropdown admonition">
+<p class="admonition-title">Intro to NLP with Spark (Pt. 2)</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">F.split(F.col(&quot;value&quot;),</span> <span class="pre">&quot;</span> <span class="pre">&quot;)</span></code> tokenizes each line into a <strong>list</strong>; <strong><code class="docutils literal notranslate"><span class="pre">.alias()</span></code></strong> renames the ugly auto-generated output.</p></li>
+<li><p>Select columns via <code class="docutils literal notranslate"><span class="pre">select</span></code>, bracket, or dot notation; a selected column is itself a DataFrame.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">F.explode</span></code></strong> turns each list into <strong>one row per word</strong> (~13k lines → ~127k words).</p></li>
+<li><p>Watch row/column counts at every step so you don’t silently lose data.</p></li>
+</ul>
+</div>
+<div class="note dropdown admonition">
+<p class="admonition-title">Intro to NLP with Spark (Pt. 3)</p>
+<ul class="simple">
+<li><p>Cleanup: <code class="docutils literal notranslate"><span class="pre">F.lower(...)</span></code> then <code class="docutils literal notranslate"><span class="pre">F.regexp_replace(word,</span> <span class="pre">&quot;[^a-zA-Z]&quot;,</span> <span class="pre">&quot;&quot;)</span></code> so <code class="docutils literal notranslate"><span class="pre">prejudice,</span></code> == <code class="docutils literal notranslate"><span class="pre">prejudice</span></code>.</p></li>
+<li><p>Filter <code class="docutils literal notranslate"><span class="pre">word</span> <span class="pre">!=</span> <span class="pre">&quot;&quot;</span></code> to drop ~5,000 blank rows (the paragraph breaks from the space split) → ~122k words.</p></li>
+<li><p>Row count stays the same after cleaning; only the <strong>contents</strong> of each row change.</p></li>
+<li><p>This walkthrough is deliberately <strong>eager</strong> (many temp DataFrames) for learning; we’ll tighten it into chained code later.</p></li>
+</ul>
+</div>
+<div class="note dropdown admonition">
+<p class="admonition-title">Where do we go from here (Week 1)</p>
+<ul class="simple">
+<li><p>Get the free text — <strong>Rioux, <em>Data Analysis with Python and PySpark</em></strong> — via the UConn library and keep up with readings.</p></li>
+<li><p>Build file structures <strong>without spaces</strong> (use underscores), mirroring how Drive names things.</p></li>
+<li><p><strong>Practice Python EDA</strong> (rows/columns, plots, tables) — the spirit carries into PySpark, but pandas/Matplotlib are <strong>eager</strong>.</p></li>
+<li><p><strong>Koalas</strong> (a pandas-like API on Spark) is worth exploring later for big-data EDA.</p></li>
+</ul>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Big Data with PySpark</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="module-2-dataframes-joins-sql.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Chapter 2 — DataFrames: EDA, Joins &amp; SQL</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-command-line-linux-basics">1.1 The command line: Linux basics</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-spark-and-why-scale-out">1.2 What is Spark, and why scale out?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#distributed-processing-and-lazy-evaluation">1.3 Distributed processing and lazy evaluation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-first-pyspark-program">1.4 A first PySpark program</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#text-as-data-the-nlp-word-count-pipeline">1.5 Text as data: the NLP word-count pipeline</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#chaining-and-scaling-out">1.6 Chaining and scaling out</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#saving-results-the-coalesced-file">1.7 Saving results: the coalesced file</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#where-to-go-from-here-week-1">1.8 Where to go from here (Week 1)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lecture-key-points">📌 Lecture key points</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Dr. Dave Wanik · University of Connecticut (OPIM 5502)
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
